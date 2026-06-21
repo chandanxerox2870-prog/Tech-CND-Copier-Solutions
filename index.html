@@ -1,10 +1,229 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="500" height="360" viewBox="0 0 500 360">
-  <rect width="500" height="360" fill="#f8fafc"/>
-  <rect x="130" y="70" width="240" height="180" rx="12" fill="#ffffff" stroke="#d1d5db" stroke-width="8"/>
-  <rect x="170" y="35" width="160" height="70" rx="8" fill="#e5e7eb" stroke="#9ca3af" stroke-width="5"/>
-  <rect x="160" y="125" width="180" height="50" rx="8" fill="#111827"/>
-  <circle cx="360" cy="150" r="18" fill="#ce1212"/>
-  <rect x="165" y="205" width="170" height="25" rx="5" fill="#e5e7eb"/>
-  <text x="250" y="300" font-family="Arial" font-size="28" text-anchor="middle" fill="#ce1212" font-weight="700">TECH CND</text>
-  <text x="250" y="325" font-family="Arial" font-size="16" text-anchor="middle" fill="#374151">Copier Solution</text>
-</svg>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tech CND Copier Solution | Canon Copier Sales, Service & Spare Parts</title>
+  <meta name="description" content="Tech CND Copier Solution - Canon photocopier machine sales, service, spare parts, toner, drum, fuser assembly and accessories in Birbhum and nearby areas." />
+  <meta name="keywords" content="Tech CND Copier Solution, Canon copier, photocopier machine, copier spare parts, toner, drum, fuser, Birbhum copier service" />
+  <meta name="author" content="Tech CND Copier Solution" />
+  <meta property="og:title" content="Tech CND Copier Solution" />
+  <meta property="og:description" content="Canon copier machine sales, service and spare parts." />
+  <meta property="og:type" content="website" />
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    :root{--red:#ce1212;--dark:#111827}
+    .bg-red-main{background:var(--red)}.text-red-main{color:var(--red)}.border-red-main{border-color:var(--red)}
+    .hero-bg{background:linear-gradient(90deg,rgba(0,0,0,.82),rgba(0,0,0,.35)),url('https://images.unsplash.com/photo-1581091226033-d5c48150dbaa?w=1400&auto=format&fit=crop') center/cover}
+    .line-clamp-2{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+    .modal{display:none}.modal.show{display:flex}
+    .toast{position:fixed;right:16px;bottom:90px;z-index:80;display:none}.toast.show{display:block}
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans">
+  <div id="toast" class="toast bg-black text-white px-4 py-2 rounded shadow-lg text-sm"></div>
+
+  <div class="bg-black text-white text-xs py-2 px-4 md:px-12 flex flex-col md:flex-row justify-between items-center gap-2">
+    <div class="flex flex-wrap justify-center gap-3">
+      <span><i class="fas fa-truck mr-1"></i> Free Service Visit*</span>
+      <span>Warranty on Parts & Service</span>
+      <span>Birbhum & Nearby Support</span>
+    </div>
+    <div class="flex flex-wrap justify-center gap-4">
+      <button onclick="openTrackModal()" class="hover:underline"><i class="fas fa-search-location mr-1"></i> Track Order</button>
+      <button onclick="openCompareModal()" class="hover:underline"><i class="fas fa-exchange-alt mr-1"></i> Compare (<span id="compareCount">0</span>)</button>
+      <button onclick="openWishlistModal()" class="hover:underline"><i class="fas fa-heart mr-1"></i> Wishlist (<span id="wishlistCount">0</span>)</button>
+    </div>
+  </div>
+
+  <header class="bg-white py-4 px-4 md:px-12 flex flex-col md:flex-row justify-between items-center gap-4 border-b border-gray-200 sticky top-0 z-40 shadow-sm">
+    <a href="#home" class="text-center md:text-left">
+      <h1 class="text-3xl font-extrabold tracking-tight">TECH <span class="text-red-main">CND</span></h1>
+      <p class="text-xs uppercase tracking-widest font-bold text-gray-600">Copier Solution</p>
+    </a>
+    <div class="w-full md:w-1/3 flex">
+      <input type="text" id="searchInput" oninput="applyFilters()" placeholder="Search Canon copier, toner, drum..." class="w-full border-2 border-gray-300 border-r-0 px-4 py-2 rounded-l focus:outline-none focus:border-red-main" />
+      <button onclick="applyFilters()" class="bg-red-main text-white px-5 rounded-r hover:bg-red-700 transition"><i class="fas fa-search"></i></button>
+    </div>
+    <div class="flex items-center gap-6 text-sm">
+      <a href="tel:+919735474770" class="flex items-center gap-2">
+        <i class="fas fa-phone-alt text-2xl text-gray-600"></i><div><p class="text-xs text-gray-500">Call Now</p><p class="font-bold">+91 9735474770</p></div>
+      </a>
+      <button onclick="openCartModal()" class="flex items-center gap-2 relative">
+        <i class="fas fa-shopping-basket text-2xl text-red-main"></i>
+        <span id="cartCount" class="absolute -top-2 left-4 bg-red-main text-white text-[10px] rounded-full w-5 h-5 flex items-center justify-center">0</span>
+        <div><p class="text-[10px] text-gray-500">My Cart</p><p id="cartAmount" class="font-bold text-xs">₹0</p></div>
+      </button>
+    </div>
+  </header>
+
+  <nav class="bg-white border-b border-gray-200 z-30">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-stretch">
+      <div class="bg-red-main text-white px-6 py-3 font-bold flex items-center gap-2 justify-center"><i class="fas fa-bars"></i> PRODUCTS LIVE</div>
+      <div id="navCategories" class="flex flex-wrap justify-center items-center text-sm font-semibold text-gray-700"></div>
+    </div>
+  </nav>
+
+  <section class="bg-black text-white flex items-center text-xs">
+    <div class="bg-red-main px-4 py-2 font-bold uppercase tracking-wider whitespace-nowrap">Latest Stock</div>
+    <marquee class="py-2 font-medium" scrollamount="5">Canon IR 2525, IR 3225, IR 2206N, NPG Toner, Drum Unit, Fuser Assembly, Developer, Pickup Roller available. WhatsApp: +91 9735474770</marquee>
+  </section>
+
+  <section id="home" class="hero-bg text-white">
+    <div class="max-w-7xl mx-auto px-4 py-16 grid md:grid-cols-2 gap-8 items-center">
+      <div>
+        <p class="text-sm font-bold tracking-widest text-red-200 uppercase">Sales • Service • Spare Parts</p>
+        <h2 class="text-4xl md:text-5xl font-extrabold mt-3 leading-tight">Canon Photocopier Machine & Parts Store</h2>
+        <p class="mt-4 text-gray-100">New/used copier machine, toner, drum, fuser, roller, PCB, scanner, accessories and service support.</p>
+        <div class="mt-6 flex flex-wrap gap-3">
+          <a href="#products" class="bg-red-main px-6 py-3 rounded font-bold hover:bg-red-700">Shop Now</a>
+          <a href="https://wa.me/919735474770?text=Hello%20Tech%20CND%2C%20I%20need%20copier%20machine%20or%20parts" target="_blank" class="bg-green-600 px-6 py-3 rounded font-bold hover:bg-green-700"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+        </div>
+      </div>
+      <div class="bg-white/95 rounded-xl p-6 text-gray-800 shadow-2xl">
+        <h3 class="text-xl font-extrabold text-red-main">Quick Order</h3>
+        <p class="text-sm text-gray-600 mt-1">Part/model name লিখে WhatsApp করুন।</p>
+        <div class="grid grid-cols-2 gap-3 mt-5 text-center text-sm">
+          <div class="border rounded p-3"><i class="fa-solid fa-print text-2xl text-red-main"></i><p class="font-bold mt-1">Canon Machines</p></div>
+          <div class="border rounded p-3"><i class="fa-solid fa-gears text-2xl text-red-main"></i><p class="font-bold mt-1">Spare Parts</p></div>
+          <div class="border rounded p-3"><i class="fa-solid fa-fill-drip text-2xl text-red-main"></i><p class="font-bold mt-1">Toner & Drum</p></div>
+          <div class="border rounded p-3"><i class="fa-solid fa-screwdriver-wrench text-2xl text-red-main"></i><p class="font-bold mt-1">Service</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="max-w-7xl mx-auto my-8 px-4">
+    <h3 class="text-lg font-bold mb-4 uppercase tracking-wide text-gray-700">Filter By Category</h3>
+    <div id="categoryCards" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 text-center"></div>
+  </section>
+
+  <section id="products" class="max-w-7xl mx-auto my-12 px-4">
+    <div class="flex flex-col md:flex-row justify-between md:items-center border-b-2 border-gray-200 pb-3 mb-6 gap-3">
+      <div><h3 id="currentCategoryTitle" class="text-xl font-extrabold uppercase tracking-wide">All Products</h3><p id="resultInfo" class="text-xs text-gray-500"></p></div>
+      <select id="sortSelect" onchange="applyFilters()" class="border rounded px-3 py-2 text-sm">
+        <option value="default">Default Sorting</option><option value="low">Price: Low to High</option><option value="high">Price: High to Low</option><option value="name">Name A-Z</option>
+      </select>
+    </div>
+    <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4"></div>
+  </section>
+
+  <section class="bg-white border-t border-b py-10 px-4">
+    <div class="max-w-7xl mx-auto grid md:grid-cols-4 gap-4 text-center">
+      <div class="p-4"><i class="fa-solid fa-shield-halved text-3xl text-red-main"></i><h4 class="font-bold mt-2">Warranty Support</h4><p class="text-xs text-gray-500">Parts & service warranty available.</p></div>
+      <div class="p-4"><i class="fa-solid fa-truck-fast text-3xl text-red-main"></i><h4 class="font-bold mt-2">Fast Delivery</h4><p class="text-xs text-gray-500">Birbhum and nearby areas.</p></div>
+      <div class="p-4"><i class="fa-solid fa-headset text-3xl text-red-main"></i><h4 class="font-bold mt-2">Service Visit</h4><p class="text-xs text-gray-500">Machine checking & installation.</p></div>
+      <div class="p-4"><i class="fa-solid fa-file-invoice text-3xl text-red-main"></i><h4 class="font-bold mt-2">WhatsApp Invoice</h4><p class="text-xs text-gray-500">Order details sent directly.</p></div>
+    </div>
+  </section>
+
+  <footer class="bg-gray-900 text-white px-4 py-10">
+    <div class="max-w-7xl mx-auto grid md:grid-cols-3 gap-8">
+      <div><h3 class="text-2xl font-extrabold">TECH <span class="text-red-main">CND</span></h3><p class="text-sm text-gray-300 mt-2">Canon copier machine sales, service and spare parts.</p></div>
+      <div><h4 class="font-bold mb-2">Contact</h4><p class="text-sm text-gray-300">Phone/WhatsApp: +91 9735474770</p><p class="text-sm text-gray-300">Service Area: Birbhum & nearby</p></div>
+      <div><h4 class="font-bold mb-2">Quick Links</h4><button onclick="openTrackModal()" class="block text-sm text-gray-300 hover:text-white">Track Order</button><button onclick="openCartModal()" class="block text-sm text-gray-300 hover:text-white">Cart / Checkout</button></div>
+    </div>
+    <p class="text-center text-xs text-gray-500 mt-8">© 2026 Tech CND Copier Solution. All rights reserved.</p>
+  </footer>
+
+  <a href="https://wa.me/919735474770" target="_blank" class="fixed bottom-4 left-4 z-50 bg-green-500 text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg text-2xl hover:bg-green-600 transition"><i class="fab fa-whatsapp"></i></a>
+
+  <div id="modal" class="modal fixed inset-0 bg-black/60 z-[100] items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-center border-b p-4"><h3 id="modalTitle" class="font-extrabold text-lg"></h3><button onclick="closeModal()" class="text-2xl">&times;</button></div>
+      <div id="modalBody" class="p-4"></div>
+    </div>
+  </div>
+
+  <script>
+    const phone = '919735474770';
+    const categories = [
+      {name:'All', icon:'fa-th'}, {name:'Canon Machines', icon:'fa-print'}, {name:'Spare Parts', icon:'fa-gears'},
+      {name:'Toner & Drum', icon:'fa-fill-drip'}, {name:'Fuser Parts', icon:'fa-wrench'}, {name:'Accessories', icon:'fa-plug'}
+    ];
+    // Real product photos: only used where the photo genuinely matches the machine.
+    // Everything else falls back to a neutral placeholder so we never show a misleading photo.
+    const PLACEHOLDER = 'images/tech-cnd-placeholder.svg';
+    const machineRealPhoto = {
+      'Canon IR ADV C5235 Color Copier': 'images/canon-c3322l.jpg', // color MFP series match
+      'Canon IR ADV 4525 Machine': 'images/canon-4945i.jpg',        // ADV high-capacity series match
+      'Canon IR ADV 4235 Machine': 'images/canon-619i.jpg'          // ADV high-capacity series match
+    };
+    const img = {
+      'Canon Machines': PLACEHOLDER,
+      'Spare Parts':'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=500&auto=format&fit=crop',
+      'Toner & Drum':'https://images.unsplash.com/photo-1612815154858-60aa4c59eaa6?w=500&auto=format&fit=crop',
+      'Fuser Parts':'https://images.unsplash.com/photo-1537462715879-360eeb61a0bc?w=500&auto=format&fit=crop',
+      'Accessories':'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=500&auto=format&fit=crop'
+    };
+    function productImage(name, category, index){
+      if(category==='Canon Machines') return machineRealPhoto[name] || PLACEHOLDER;
+      if(name.toLowerCase().includes('toner') || name.toLowerCase().includes('drum')) return img['Toner & Drum'];
+      if(name.toLowerCase().includes('fuser') || name.toLowerCase().includes('heater') || name.toLowerCase().includes('fixing')) return img['Fuser Parts'];
+      return img[category] || img['Accessories'];
+    }
+    const baseProducts = [
+      ['Canon IR 2525 Photocopier Machine','Canon Machines',55000],['Canon IR 3225 Photocopier Machine','Canon Machines',68000],['Canon IR 2206N Copier Printer','Canon Machines',62000],['Canon IR 2006N Copier Printer','Canon Machines',52000],['Canon IR ADV 4525 Machine','Canon Machines',125000],['Canon IR ADV 4235 Machine','Canon Machines',115000],['Canon IR ADV C5235 Color Copier','Canon Machines',185000],['Canon IR 3300 Heavy Duty Copier','Canon Machines',48000],
+      ['Canon NPG-59 Toner','Toner & Drum',1350],['Canon NPG-51 Toner','Toner & Drum',1250],['Canon NPG-28 Toner','Toner & Drum',950],['Canon NPG-67 Toner Set','Toner & Drum',4800],['OPC Drum Canon IR Series','Toner & Drum',1450],['Drum Unit IR 2525/2530','Toner & Drum',3200],['Developer Powder Canon','Toner & Drum',700],['PCR Roller Canon','Toner & Drum',450],
+      ['Fuser Assembly IR 2525','Fuser Parts',8500],['Upper Roller Canon','Fuser Parts',1450],['Lower Pressure Roller','Fuser Parts',1750],['Fixing Film Sleeve','Fuser Parts',1200],['Thermistor Canon Fuser','Fuser Parts',650],['Heater Lamp Canon','Fuser Parts',900],['Fuser Gear Set','Fuser Parts',550],['Separation Claw Set','Fuser Parts',350],
+      ['Pickup Roller Set','Spare Parts',550],['Separation Pad','Spare Parts',350],['ADF Roller Kit','Spare Parts',1450],['Transfer Roller','Spare Parts',850],['Registration Roller','Spare Parts',1100],['Main Drive Gear','Spare Parts',750],['DC Controller PCB','Spare Parts',4500],['Power Supply Board','Spare Parts',3800],['Scanner Cable','Spare Parts',550],['Paper Tray Sensor','Spare Parts',450],
+      ['USB Printer Cable','Accessories',250],['LAN Cable 5 Meter','Accessories',180],['Power Cable Copier','Accessories',300],['Stabilizer for Copier','Accessories',2500],['Machine Stand','Accessories',2200],['Dust Cover','Accessories',450],['Service Tool Kit','Accessories',1200],['Cleaning Cloth Pack','Accessories',120]
+    ];
+    let products = baseProducts.map((p,i)=>({id:i+1,name:p[0],category:p[1],price:p[2],image:productImage(p[0],p[1],i),stock:i%4===0?'Limited':'In Stock'}));
+    // extend catalog with meaningful repeated variants, not random names
+    const models=['IR 2525','IR 3225','IR 2206','IR 2006N','IR 3300','IR ADV 4525','IR ADV 4235'];
+    const parts=['Gear','Sensor','Roller','Bushing','Clutch','Spring','Cable','Tray Lock','Developer Seal','Drum Blade'];
+    for(let i=products.length+1;i<=120;i++){
+      const cat = i%5===0?'Accessories':i%4===0?'Fuser Parts':i%3===0?'Toner & Drum':'Spare Parts';
+      const name = cat==='Spare Parts' ? `Canon ${models[i%models.length]} ${parts[i%parts.length]}` : cat==='Fuser Parts' ? `Canon ${models[i%models.length]} Fuser ${parts[i%parts.length]}` : cat==='Toner & Drum' ? `Canon ${models[i%models.length]} Drum/Toner Kit` : `Copier ${parts[i%parts.length]} Accessory`;
+      products.push({id:i,name,category:cat,price:300+(i*73)%9500,image:productImage(name,cat,i),stock:i%7===0?'Limited':'In Stock'});
+    }
+    let selectedCategory='All', cart=JSON.parse(localStorage.getItem('cart')||'[]'), wishlist=JSON.parse(localStorage.getItem('wishlist')||'[]'), compare=JSON.parse(localStorage.getItem('compare')||'[]');
+
+    function money(n){return '₹'+Number(n).toLocaleString('en-IN')}
+    function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1800)}
+    function save(){localStorage.setItem('cart',JSON.stringify(cart));localStorage.setItem('wishlist',JSON.stringify(wishlist));localStorage.setItem('compare',JSON.stringify(compare));updateCounts()}
+    function updateCounts(){document.getElementById('cartCount').textContent=cart.reduce((s,x)=>s+x.qty,0);document.getElementById('cartAmount').textContent=money(cart.reduce((s,x)=>s+x.price*x.qty,0));document.getElementById('wishlistCount').textContent=wishlist.length;document.getElementById('compareCount').textContent=compare.length}
+    function initCats(){
+      document.getElementById('navCategories').innerHTML=categories.map(c=>`<button onclick="filterCategory('${c.name}')" class="px-4 py-3 hover:text-red-main ${c.name==='All'?'text-red-main border-b-2 border-red-main':''}">${c.name}</button>`).join('');
+      document.getElementById('categoryCards').innerHTML=categories.map(c=>`<button onclick="filterCategory('${c.name}')" class="bg-white border p-4 rounded shadow-sm hover:border-red-main cursor-pointer transition"><i class="fas ${c.icon} text-2xl text-gray-600 mb-2"></i><p class="text-xs font-bold uppercase">${c.name}</p></button>`).join('');
+    }
+    function render(list){
+      document.getElementById('resultInfo').textContent=`Showing ${list.length} products`;
+      const grid=document.getElementById('productGrid');
+      if(!list.length){grid.innerHTML='<p class="col-span-full text-center text-gray-500 py-8">No products found.</p>';return}
+      grid.innerHTML=list.map(p=>`<div class="bg-white border rounded p-3 relative shadow-sm hover:shadow-md transition flex flex-col justify-between">
+        <span class="absolute top-2 left-2 bg-red-main text-white text-[9px] font-bold px-1.5 py-0.5 rounded">#${p.id}</span>
+        <span class="absolute top-2 right-2 ${p.stock==='In Stock'?'bg-green-600':'bg-yellow-500'} text-white text-[9px] font-bold px-1.5 py-0.5 rounded">${p.stock}</span>
+        <div class="h-36 w-full bg-gray-50 rounded flex items-center justify-center mb-3 overflow-hidden p-2"><img src="${p.image}" onerror="this.src='images/tech-cnd-placeholder.svg'" alt="${p.name}" class="object-contain h-full w-full"></div>
+        <span class="text-[9px] text-gray-400 font-bold uppercase">${p.category}</span><h4 class="text-sm font-bold text-gray-700 line-clamp-2 min-h-[2.5rem] mt-0.5">${p.name}</h4><p class="text-red-main font-extrabold text-base mt-1">${money(p.price)}</p>
+        <div class="grid grid-cols-2 gap-2 mt-3"><button onclick="addToCart(${p.id})" class="bg-red-main text-white text-xs font-bold py-2 rounded hover:bg-red-700"><i class="fas fa-cart-plus"></i> Cart</button><button onclick="buyNow(${p.id})" class="bg-green-600 text-white text-xs font-bold py-2 rounded hover:bg-green-700">Buy</button></div>
+        <div class="grid grid-cols-2 gap-2 mt-2"><button onclick="toggleWishlist(${p.id})" class="border text-xs py-1 rounded hover:border-red-main">♡ Wishlist</button><button onclick="toggleCompare(${p.id})" class="border text-xs py-1 rounded hover:border-red-main">⇄ Compare</button></div>
+      </div>`).join('')
+    }
+    function applyFilters(){
+      const q=document.getElementById('searchInput').value.toLowerCase().trim(); let list=products.filter(p=>(selectedCategory==='All'||p.category===selectedCategory)&&(p.name.toLowerCase().includes(q)||p.category.toLowerCase().includes(q)));
+      const sort=document.getElementById('sortSelect').value; if(sort==='low')list.sort((a,b)=>a.price-b.price); if(sort==='high')list.sort((a,b)=>b.price-a.price); if(sort==='name')list.sort((a,b)=>a.name.localeCompare(b.name)); render(list)
+    }
+    function filterCategory(c){selectedCategory=c;document.getElementById('currentCategoryTitle').textContent=(c==='All'?'All Products':c+' Catalog');applyFilters();document.getElementById('products').scrollIntoView({behavior:'smooth'})}
+    function addToCart(id){const p=products.find(x=>x.id===id), item=cart.find(x=>x.id===id); item?item.qty++:cart.push({...p,qty:1}); save();toast('Added to cart')}
+    function buyNow(id){addToCart(id);openCartModal()}
+    function toggleWishlist(id){const p=products.find(x=>x.id===id); wishlist.some(x=>x.id===id)?wishlist=wishlist.filter(x=>x.id!==id):wishlist.push(p); save();toast('Wishlist updated')}
+    function toggleCompare(id){const p=products.find(x=>x.id===id); if(compare.some(x=>x.id===id)) compare=compare.filter(x=>x.id!==id); else { if(compare.length>=4){toast('Compare max 4 items');return} compare.push(p)} save();toast('Compare updated')}
+    function openModal(title,body){document.getElementById('modalTitle').textContent=title;document.getElementById('modalBody').innerHTML=body;document.getElementById('modal').classList.add('show')}
+    function closeModal(){document.getElementById('modal').classList.remove('show')}
+    function changeQty(id,d){const item=cart.find(x=>x.id===id); if(!item)return; item.qty+=d; if(item.qty<=0)cart=cart.filter(x=>x.id!==id); save();openCartModal()}
+    function openCartModal(){
+      const total=cart.reduce((s,x)=>s+x.price*x.qty,0);
+      const items=cart.length?cart.map(x=>`<div class="flex justify-between gap-3 border-b py-3"><div><b>${x.name}</b><p class="text-xs text-gray-500">${money(x.price)} × ${x.qty}</p></div><div class="flex items-center gap-2"><button onclick="changeQty(${x.id},-1)" class="border px-2 rounded">-</button><span>${x.qty}</span><button onclick="changeQty(${x.id},1)" class="border px-2 rounded">+</button></div></div>`).join(''):'<p class="text-gray-500">Cart empty.</p>';
+      openModal('Cart & Checkout',`${items}<div class="text-right font-extrabold text-lg mt-4">Total: ${money(total)}</div><div class="grid gap-2 mt-4"><input id="custName" class="border rounded p-2" placeholder="Customer Name"><input id="custPhone" class="border rounded p-2" placeholder="Phone Number"><input id="custPin" class="border rounded p-2" placeholder="Pincode"><textarea id="custAddress" class="border rounded p-2" placeholder="Full Address"></textarea><button onclick="sendOrder()" class="bg-green-600 text-white rounded p-3 font-bold"><i class="fab fa-whatsapp"></i> Send Order on WhatsApp</button></div>`)
+    }
+    function sendOrder(){ if(!cart.length){toast('Cart empty');return} const name=document.getElementById('custName').value||'Customer'; const ph=document.getElementById('custPhone').value||''; const pin=document.getElementById('custPin').value||''; const addr=document.getElementById('custAddress').value||''; const total=cart.reduce((s,x)=>s+x.price*x.qty,0); let msg=`Tech CND New Order%0AName: ${encodeURIComponent(name)}%0APhone: ${encodeURIComponent(ph)}%0APincode: ${encodeURIComponent(pin)}%0AAddress: ${encodeURIComponent(addr)}%0A%0AItems:%0A`; cart.forEach(x=>msg+=`${encodeURIComponent(x.name)} - Qty ${x.qty} - ${money(x.price*x.qty)}%0A`); msg+=`%0ATotal: ${money(total)}%0AOrder ID: CND${Date.now().toString().slice(-6)}`; window.open(`https://wa.me/${phone}?text=${msg}`,'_blank') }
+    function openWishlistModal(){openModal('Wishlist', wishlist.length?wishlist.map(x=>`<div class="border-b py-2 flex justify-between"><span>${x.name}</span><button onclick="addToCart(${x.id})" class="text-red-main font-bold">Add</button></div>`).join(''):'<p>No wishlist items.</p>')}
+    function openCompareModal(){openModal('Compare Products', compare.length?`<div class="overflow-x-auto"><table class="w-full text-sm border"><tr class="bg-gray-100"><th class="border p-2">Name</th><th class="border p-2">Category</th><th class="border p-2">Price</th><th class="border p-2">Stock</th></tr>${compare.map(x=>`<tr><td class="border p-2">${x.name}</td><td class="border p-2">${x.category}</td><td class="border p-2">${money(x.price)}</td><td class="border p-2">${x.stock}</td></tr>`).join('')}</table></div>`:'<p>No compare items.</p>')}
+    function openTrackModal(){openModal('Track Order',`<p class="text-sm text-gray-600 mb-3">Order ID লিখুন। Demo status দেখাবে।</p><input id="trackId" class="border rounded p-2 w-full" placeholder="Example: CND123456"><button onclick="document.getElementById('trackResult').innerHTML='✅ Order received / processing. For exact status call +91 9735474770'" class="bg-red-main text-white rounded p-2 mt-3 font-bold">Track</button><p id="trackResult" class="mt-3 font-bold text-green-700"></p>`)}
+    initCats();updateCounts();applyFilters();
+  </script>
+</body>
+</html>
