@@ -172,7 +172,7 @@
     ];
     // Real product photos: only used where the photo genuinely matches the machine.
     // Everything else falls back to a neutral placeholder so we never show a misleading photo.
-    const PLACEHOLDER = 'images/tech-cnd-placeholder.svg';
+    const PLACEHOLDER = 'tech-cnd-placeholder.svg';
     const machineRealPhoto = {
       'Canon IR ADV C5235 Color Copier': 'images/canon-c3322l.jpg', // color MFP series match
       'Canon IR ADV 4525 Machine': 'images/canon-619i.jpg',        // ADV high-capacity series match
@@ -246,7 +246,7 @@
       grid.innerHTML=list.map(p=>`<div class="bg-white border rounded-2xl p-3 relative shadow-sm hover:shadow-xl hover:-translate-y-1 transition flex flex-col justify-between">
         <span class="absolute top-2 left-2 bg-red-main text-white text-[9px] font-bold px-1.5 py-0.5 rounded">#${p.id}</span>
         <span class="absolute top-2 right-2 ${p.stock==='In Stock'?'bg-green-600':'bg-yellow-500'} text-white text-[9px] font-bold px-1.5 py-0.5 rounded">${p.stock}</span>
-        <div class="h-36 w-full bg-gray-50 rounded flex items-center justify-center mb-3 overflow-hidden p-2"><img src="${p.image}" onerror="this.src='images/tech-cnd-placeholder.svg'" alt="${p.name}" class="object-contain h-full w-full"></div>
+        <div class="h-36 w-full bg-gray-50 rounded flex items-center justify-center mb-3 overflow-hidden p-2"><img src="${p.image}" onerror="this.onerror=null;this.src='tech-cnd-placeholder.svg'" alt="${p.name}" class="object-contain h-full w-full"></div>
         <span class="text-[9px] text-gray-400 font-bold uppercase">${p.category}</span><h4 class="text-sm font-bold text-gray-700 line-clamp-2 min-h-[2.5rem] mt-0.5">${p.name}</h4><p class="text-red-main font-extrabold text-base mt-1">${money(p.price)} ${p.discount?`<span class='text-[10px] bg-green-100 text-green-700 px-1 rounded'>${p.discount}% OFF</span>`:''}</p>${p.mrp&&p.mrp>p.price?`<p class='text-xs text-gray-400 line-through'>MRP ${money(p.mrp)}</p>`:''}${p.details?`<p class='text-[11px] text-gray-500 line-clamp-2 mt-1'>${p.details}</p>`:''}
         <div class="grid grid-cols-2 gap-2 mt-3">${p.stock==='Out of Stock'?`<button disabled class='bg-gray-300 text-gray-600 text-xs font-bold py-2 rounded col-span-2'>Out of Stock</button>`:`<button onclick='addToCart("${p.id}")' class='bg-red-main text-white text-xs font-bold py-2 rounded hover:bg-red-700'><i class='fas fa-cart-plus'></i> Cart</button><button onclick='buyNow("${p.id}")' class='bg-green-600 text-white text-xs font-bold py-2 rounded hover:bg-green-700'>Buy</button>`}</div>
         <div class="grid grid-cols-2 gap-2 mt-2"><button onclick="toggleWishlist(${p.id})" class="border text-xs py-1 rounded hover:border-red-main">♡ Wishlist</button><button onclick="toggleCompare(${p.id})" class="border text-xs py-1 rounded hover:border-red-main">⇄ Compare</button></div>
@@ -305,10 +305,10 @@
 <script>
 // ===== Google Sheet Backend Connected Version =====
 const API_URL = "https://script.google.com/macros/s/AKfycbxSdAqsOtxQdHlcb_zyO91HWdb8fl2HQ3Go7NXCh_0R0wCGoofGGYuz20FtACzfDtVW/exec";
-function normProduct(p,i=0){return {id:p.id||('P'+i),name:p.name||'',category:p.category||'Spare Parts',price:Number(p.price||0),mrp:Number(p.mrp||p.price||0),discount:Number(p.discount||0),details:p.details||'',image:p.image||'images/tech-cnd-placeholder.svg',stock:p.stock||p.stockStatus||'In Stock'}}
+function normProduct(p,i=0){return {id:p.id||('P'+i),name:p.name||'',category:p.category||'Spare Parts',price:Number(p.price||0),mrp:Number(p.mrp||p.price||0),discount:Number(p.discount||0),details:p.details||'',image:p.image||'tech-cnd-placeholder.svg',stock:p.stock||p.stockStatus||'In Stock'}}
 function normOrder(o){return {id:o.id||o.orderId||'',customer:o.customer||o.customerName||'',phone:o.phone||o.mobile||'',status:o.status||o.orderStatus||'Order Received',paymentStatus:o.paymentStatus||'Payment Pending',amount:Number(o.amount||0),tracking:o.tracking||o.trackingLink||'',deliveryName:o.deliveryName||o.deliveryBoyName||'',deliveryPhone:o.deliveryPhone||o.deliveryBoyMobile||'',note:o.note||'',updated:o.updated||o.date||''}}
-async function apiGet(action){const r=await fetch(API_URL+'?action='+action+'&t='+Date.now()); if(!r.ok) throw new Error('API error'); return await r.json();}
-async function apiPost(data){const r=await fetch(API_URL,{method:'POST',body:JSON.stringify(data)}); if(!r.ok) throw new Error('API error'); return await r.json();}
+async function apiGet(action){const c=new AbortController(); const t=setTimeout(()=>c.abort(),8000); try{const r=await fetch(API_URL+'?action='+action+'&t='+Date.now(),{signal:c.signal,cache:'no-store'}); if(!r.ok) throw new Error('API error'); return await r.json();} finally{clearTimeout(t);} }
+async function apiPost(data){const c=new AbortController(); const t=setTimeout(()=>c.abort(),10000); try{const r=await fetch(API_URL,{method:'POST',body:JSON.stringify(data),signal:c.signal,cache:'no-store'}); if(!r.ok) throw new Error('API error'); return await r.json();} finally{clearTimeout(t);} }
 async function loadSheetProducts(){try{const data=await apiGet('products'); const arr=(Array.isArray(data)?data:[]).filter(x=>x&&x.id).map(normProduct); if(arr.length){products=arr; localStorage.setItem('techCndProducts',JSON.stringify(arr)); applyFilters();}}catch(e){console.warn('Sheet product load failed',e)}}
 async function getSheetOrders(){try{const data=await apiGet('orders'); const arr=(Array.isArray(data)?data:[]).filter(x=>x&&(x.orderId||x.id)).map(normOrder); localStorage.setItem(ORDER_KEY,JSON.stringify(arr)); return arr;}catch(e){return JSON.parse(localStorage.getItem(ORDER_KEY)||'[]')}}
 function getOrders(){try{return JSON.parse(localStorage.getItem(ORDER_KEY)||'[]')}catch(e){return []}}

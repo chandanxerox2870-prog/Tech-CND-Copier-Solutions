@@ -73,7 +73,7 @@
           <label class="text-xs font-bold">Product Image Upload</label>
           <input id="pimageFile" type="file" accept="image/*" class="border rounded-xl p-3 w-full mb-3" onchange="previewImage(event)">
           <input id="pimage" class="border rounded-xl p-3 w-full mb-3" placeholder="Image URL or uploaded image data" readonly>
-          <img id="imgPreview" src="images/tech-cnd-placeholder.svg" class="w-full h-40 object-contain bg-gray-50 rounded-xl border mb-3 p-2">
+          <img id="imgPreview" src="tech-cnd-placeholder.svg" class="w-full h-40 object-contain bg-gray-50 rounded-xl border mb-3 p-2">
           <div class="grid grid-cols-2 gap-3">
             <button onclick="saveProduct()" class="bg-red-600 hover:bg-red-700 text-white rounded-xl p-3 w-full font-bold"><i class="fa-solid fa-floppy-disk"></i> Save</button>
             <button onclick="resetForm()" class="bg-slate-900 text-white rounded-xl p-3 w-full font-bold">Reset</button>
@@ -165,7 +165,7 @@ function showTab(tab){
 const ADMIN_PIN='1234';
 const STORAGE_KEY='techCndProducts';
 const ORDER_KEY='techCndOrders';
-const PLACEHOLDER='images/tech-cnd-placeholder.svg';
+const PLACEHOLDER='tech-cnd-placeholder.svg';
 const categories=['Canon Machines','Spare Parts','Toner & Drum','Fuser Parts','Accessories'];
 const machineRealPhoto={
   'Canon IR ADV C5235 Color Copier':'images/canon-c3322l.jpg',
@@ -259,8 +259,8 @@ let sheetProducts = [];
 let sheetOrders = [];
 function normalizeProduct(p,i=0){return {id:p.id||('P'+Date.now()+i),name:p.name||'',category:p.category||'Spare Parts',mrp:Number(p.mrp||p.price||0),price:Number(p.price||0),discount:Number(p.discount||0),qty:Number(p.qty||p.stockQty||0),stock:p.stock||p.stockStatus||'In Stock',details:p.details||'',image:p.image||PLACEHOLDER}}
 function normalizeOrder(o){return {id:o.id||o.orderId||'',customer:o.customer||o.customerName||'',phone:o.phone||o.mobile||'',status:o.status||o.orderStatus||'Order Received',paymentStatus:o.paymentStatus||'Payment Pending',amount:Number(o.amount||0),tracking:o.tracking||o.trackingLink||'',deliveryName:o.deliveryName||o.deliveryBoyName||'',deliveryPhone:o.deliveryPhone||o.deliveryBoyMobile||'',note:o.note||'',updated:o.updated||o.date||''}}
-async function apiGet(action){const r=await fetch(API_URL+'?action='+action+'&t='+Date.now()); if(!r.ok) throw new Error('API error'); return await r.json();}
-async function apiPost(data){const r=await fetch(API_URL,{method:'POST',body:JSON.stringify(data)}); if(!r.ok) throw new Error('API error'); return await r.json();}
+async function apiGet(action){const c=new AbortController(); const t=setTimeout(()=>c.abort(),8000); try{const r=await fetch(API_URL+'?action='+action+'&t='+Date.now(),{signal:c.signal,cache:'no-store'}); if(!r.ok) throw new Error('API error'); return await r.json();} finally{clearTimeout(t);} }
+async function apiPost(data){const c=new AbortController(); const t=setTimeout(()=>c.abort(),10000); try{const r=await fetch(API_URL,{method:'POST',body:JSON.stringify(data),signal:c.signal,cache:'no-store'}); if(!r.ok) throw new Error('API error'); return await r.json();} finally{clearTimeout(t);} }
 async function loadProductsFromSheet(){try{const data=await apiGet('products'); sheetProducts=(Array.isArray(data)?data:[]).filter(x=>x&&x.id).map(normalizeProduct); if(!sheetProducts.length){sheetProducts=defaultProducts(); for(const p of sheetProducts) await apiPost({action:'saveProduct',product:toSheetProduct(p)});} localStorage.setItem(STORAGE_KEY,JSON.stringify(sheetProducts)); render();}catch(e){console.warn(e); sheetProducts=JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]'); render(); alert('Google Sheet load হয়নি। Deploy setting Anyone আছে কিনা দেখুন। Local data দেখানো হচ্ছে।')}}
 async function loadOrdersFromSheet(){try{const data=await apiGet('orders'); sheetOrders=(Array.isArray(data)?data:[]).filter(x=>x&&(x.orderId||x.id)).map(normalizeOrder); localStorage.setItem(ORDER_KEY,JSON.stringify(sheetOrders)); renderOrders();}catch(e){console.warn(e); sheetOrders=JSON.parse(localStorage.getItem(ORDER_KEY)||'[]'); renderOrders();}}
 function toSheetProduct(p){return {id:p.id,name:p.name,category:p.category,mrp:p.mrp,price:p.price,discount:p.discount,stockQty:p.qty,stockStatus:p.stock,image:p.image,details:p.details}}
