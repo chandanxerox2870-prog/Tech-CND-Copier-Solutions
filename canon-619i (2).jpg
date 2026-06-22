@@ -1,0 +1,2 @@
+Admin panel is separate: admin.html
+It is not linked from public index.html. Default PIN: 1234. Change ADMIN_PIN in admin.html before publishing.

@@ -1,0 +1,15 @@
+PWA Added for Tech CND Copier Solutions
+
+Files added:
+- manifest.json
+- sw.js
+- icon-192.png
+- icon-512.png
+
+How to test:
+1. Upload all files to hosting root.
+2. Open website in Chrome mobile/desktop.
+3. Install App button or browser menu > Install app / Add to Home Screen.
+4. PWA works only on HTTPS hosting like Vercel/Netlify/custom domain.
+
+Note: After updating website, clear browser cache or change CACHE_NAME in sw.js.

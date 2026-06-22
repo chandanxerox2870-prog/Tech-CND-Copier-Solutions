@@ -19,7 +19,18 @@
     .line-clamp-2{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
     .modal{display:none}.modal.show{display:flex}
     .toast{position:fixed;right:16px;bottom:90px;z-index:80;display:none}.toast.show{display:block}
+    .glass{backdrop-filter:blur(14px);background:rgba(255,255,255,.92)}
+    .premium-card{border:1px solid rgba(17,24,39,.08);box-shadow:0 18px 40px rgba(17,24,39,.08)}
+    .hero-badge{background:rgba(206,18,18,.14);border:1px solid rgba(255,255,255,.22)}
   </style>
+
+  <!-- PWA App Install -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#ce1212">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Tech CND">
+  <link rel="apple-touch-icon" href="icon-192.png">
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans">
   <div id="toast" class="toast bg-black text-white px-4 py-2 rounded shadow-lg text-sm"></div>
@@ -39,8 +50,8 @@
 
   <header class="bg-white py-4 px-4 md:px-12 flex flex-col md:flex-row justify-between items-center gap-4 border-b border-gray-200 sticky top-0 z-40 shadow-sm">
     <a href="#home" class="text-center md:text-left">
-      <h1 class="text-3xl font-extrabold tracking-tight">TECH <span class="text-red-main">CND</span></h1>
-      <p class="text-xs uppercase tracking-widest font-bold text-gray-600">Copier Solution</p>
+      <h1 class="text-3xl font-extrabold tracking-tight flex items-center justify-center md:justify-start gap-2"><span class="bg-red-main text-white px-2 py-1 rounded-lg">TECH</span> <span class="text-red-main">CND</span></h1>
+      <p class="text-xs uppercase tracking-widest font-bold text-gray-600 mt-1">Copier Solution • Sales • Service • Parts</p>
     </a>
     <div class="w-full md:w-1/3 flex">
       <input type="text" id="searchInput" oninput="applyFilters()" placeholder="Search Canon copier, toner, drum..." class="w-full border-2 border-gray-300 border-r-0 px-4 py-2 rounded-l focus:outline-none focus:border-red-main" />
@@ -73,23 +84,31 @@
   <section id="home" class="hero-bg text-white">
     <div class="max-w-7xl mx-auto px-4 py-16 grid md:grid-cols-2 gap-8 items-center">
       <div>
-        <p class="text-sm font-bold tracking-widest text-red-200 uppercase">Sales • Service • Spare Parts</p>
-        <h2 class="text-4xl md:text-5xl font-extrabold mt-3 leading-tight">Canon Photocopier Machine & Parts Store</h2>
-        <p class="mt-4 text-gray-100">New/used copier machine, toner, drum, fuser, roller, PCB, scanner, accessories and service support.</p>
-        <div class="mt-6 flex flex-wrap gap-3">
-          <a href="#products" class="bg-red-main px-6 py-3 rounded font-bold hover:bg-red-700">Shop Now</a>
-          <a href="https://wa.me/919735474770?text=Hello%20Tech%20CND%2C%20I%20need%20copier%20machine%20or%20parts" target="_blank" class="bg-green-600 px-6 py-3 rounded font-bold hover:bg-green-700"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+        <p class="inline-flex hero-badge rounded-full px-4 py-2 text-xs font-bold tracking-widest text-red-100 uppercase">Canon Copier Expert • Birbhum Support</p>
+        <h2 class="text-4xl md:text-6xl font-black mt-4 leading-tight">Professional Copier Machine & Spare Parts Store</h2>
+        <p class="mt-4 text-gray-100 text-lg">New/used Canon copier machine, genuine quality parts, toner, drum, fuser, roller, PCB, scanner and onsite service support.</p>
+        <div class="mt-6 grid grid-cols-3 gap-3 max-w-lg text-center">
+          <div class="glass rounded-xl p-3 text-gray-900"><b class="text-xl">120+</b><p class="text-[11px] font-bold">Products</p></div>
+          <div class="glass rounded-xl p-3 text-gray-900"><b class="text-xl">24Hr</b><p class="text-[11px] font-bold">Callback</p></div>
+          <div class="glass rounded-xl p-3 text-gray-900"><b class="text-xl">Local</b><p class="text-[11px] font-bold">Service</p></div>
+        </div>
+        <div class="mt-7 flex flex-wrap gap-3">
+          <a href="#products" class="bg-red-main px-7 py-3 rounded-lg font-bold hover:bg-red-700 shadow-lg"><i class="fa-solid fa-bag-shopping mr-1"></i> Shop Products</a>
+          <a href="https://wa.me/919735474770?text=Hello%20Tech%20CND%2C%20I%20need%20copier%20machine%20or%20parts" target="_blank" class="bg-green-600 px-7 py-3 rounded-lg font-bold hover:bg-green-700 shadow-lg"><i class="fab fa-whatsapp"></i> WhatsApp Order</a>
         </div>
       </div>
-      <div class="bg-white/95 rounded-xl p-6 text-gray-800 shadow-2xl">
-        <h3 class="text-xl font-extrabold text-red-main">Quick Order</h3>
-        <p class="text-sm text-gray-600 mt-1">Part/model name লিখে WhatsApp করুন।</p>
-        <div class="grid grid-cols-2 gap-3 mt-5 text-center text-sm">
-          <div class="border rounded p-3"><i class="fa-solid fa-print text-2xl text-red-main"></i><p class="font-bold mt-1">Canon Machines</p></div>
-          <div class="border rounded p-3"><i class="fa-solid fa-gears text-2xl text-red-main"></i><p class="font-bold mt-1">Spare Parts</p></div>
-          <div class="border rounded p-3"><i class="fa-solid fa-fill-drip text-2xl text-red-main"></i><p class="font-bold mt-1">Toner & Drum</p></div>
-          <div class="border rounded p-3"><i class="fa-solid fa-screwdriver-wrench text-2xl text-red-main"></i><p class="font-bold mt-1">Service</p></div>
+      <div class="glass rounded-2xl p-6 text-gray-800 shadow-2xl premium-card">
+        <div class="flex items-center gap-4">
+          <div class="w-16 h-16 rounded-2xl bg-red-main text-white flex items-center justify-center text-3xl"><i class="fa-solid fa-print"></i></div>
+          <div><h3 class="text-2xl font-extrabold text-red-main">Quick Order</h3><p class="text-sm text-gray-600">Part/model name লিখে WhatsApp করুন।</p></div>
         </div>
+        <div class="grid grid-cols-2 gap-3 mt-5 text-center text-sm">
+          <div class="border rounded-xl p-4 bg-white"><i class="fa-solid fa-print text-2xl text-red-main"></i><p class="font-bold mt-1">Canon Machines</p></div>
+          <div class="border rounded-xl p-4 bg-white"><i class="fa-solid fa-gears text-2xl text-red-main"></i><p class="font-bold mt-1">Spare Parts</p></div>
+          <div class="border rounded-xl p-4 bg-white"><i class="fa-solid fa-fill-drip text-2xl text-red-main"></i><p class="font-bold mt-1">Toner & Drum</p></div>
+          <div class="border rounded-xl p-4 bg-white"><i class="fa-solid fa-screwdriver-wrench text-2xl text-red-main"></i><p class="font-bold mt-1">Service</p></div>
+        </div>
+        <div class="mt-5 rounded-xl bg-gray-900 text-white p-4 text-sm"><b>Free Guidance:</b> Machine model অনুযায়ী correct part confirm করে order করুন।</div>
       </div>
     </div>
   </section>
@@ -97,6 +116,15 @@
   <section class="max-w-7xl mx-auto my-8 px-4">
     <h3 class="text-lg font-bold mb-4 uppercase tracking-wide text-gray-700">Filter By Category</h3>
     <div id="categoryCards" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 text-center"></div>
+  </section>
+
+  
+  <section class="max-w-7xl mx-auto px-4 my-8">
+    <div class="grid md:grid-cols-3 gap-4">
+      <div class="bg-gradient-to-r from-red-700 to-red-500 text-white rounded-2xl p-6 premium-card"><p class="text-xs font-bold uppercase">Special Offer</p><h3 class="text-2xl font-black mt-1">Free Service Visit*</h3><p class="text-sm mt-2 text-red-50">Birbhum nearby area তে machine/parts order করলে visit support available.</p></div>
+      <div class="bg-white rounded-2xl p-6 premium-card"><p class="text-xs font-bold text-red-main uppercase">Machine Sale</p><h3 class="text-xl font-black mt-1">Used & New Canon Copier</h3><p class="text-sm mt-2 text-gray-500">IR / ADVANCE series stock, installation and demo support.</p></div>
+      <div class="bg-gray-900 text-white rounded-2xl p-6 premium-card"><p class="text-xs font-bold text-red-200 uppercase">Parts Support</p><h3 class="text-xl font-black mt-1">Toner, Drum, Fuser, PCB</h3><p class="text-sm mt-2 text-gray-300">Model wise part matching and WhatsApp invoice.</p></div>
+    </div>
   </section>
 
   <section id="products" class="max-w-7xl mx-auto my-12 px-4">
@@ -147,7 +175,7 @@
     const PLACEHOLDER = 'images/tech-cnd-placeholder.svg';
     const machineRealPhoto = {
       'Canon IR ADV C5235 Color Copier': 'images/canon-c3322l.jpg', // color MFP series match
-      'Canon IR ADV 4525 Machine': 'images/canon-4945i.jpg',        // ADV high-capacity series match
+      'Canon IR ADV 4525 Machine': 'images/canon-619i.jpg',        // ADV high-capacity series match
       'Canon IR ADV 4235 Machine': 'images/canon-619i.jpg'          // ADV high-capacity series match
     };
     const img = {
@@ -170,35 +198,57 @@
       ['Pickup Roller Set','Spare Parts',550],['Separation Pad','Spare Parts',350],['ADF Roller Kit','Spare Parts',1450],['Transfer Roller','Spare Parts',850],['Registration Roller','Spare Parts',1100],['Main Drive Gear','Spare Parts',750],['DC Controller PCB','Spare Parts',4500],['Power Supply Board','Spare Parts',3800],['Scanner Cable','Spare Parts',550],['Paper Tray Sensor','Spare Parts',450],
       ['USB Printer Cable','Accessories',250],['LAN Cable 5 Meter','Accessories',180],['Power Cable Copier','Accessories',300],['Stabilizer for Copier','Accessories',2500],['Machine Stand','Accessories',2200],['Dust Cover','Accessories',450],['Service Tool Kit','Accessories',1200],['Cleaning Cloth Pack','Accessories',120]
     ];
-    let products = baseProducts.map((p,i)=>({id:i+1,name:p[0],category:p[1],price:p[2],image:productImage(p[0],p[1],i),stock:i%4===0?'Limited':'In Stock'}));
+    let products = baseProducts.map((p,i)=>({id:i+1,name:p[0],category:p[1],price:p[2],mrp:p[2],discount:0,details:'',image:productImage(p[0],p[1],i),stock:i%4===0?'Limited':'In Stock'}));
     // extend catalog with meaningful repeated variants, not random names
     const models=['IR 2525','IR 3225','IR 2206','IR 2006N','IR 3300','IR ADV 4525','IR ADV 4235'];
     const parts=['Gear','Sensor','Roller','Bushing','Clutch','Spring','Cable','Tray Lock','Developer Seal','Drum Blade'];
     for(let i=products.length+1;i<=120;i++){
       const cat = i%5===0?'Accessories':i%4===0?'Fuser Parts':i%3===0?'Toner & Drum':'Spare Parts';
       const name = cat==='Spare Parts' ? `Canon ${models[i%models.length]} ${parts[i%parts.length]}` : cat==='Fuser Parts' ? `Canon ${models[i%models.length]} Fuser ${parts[i%parts.length]}` : cat==='Toner & Drum' ? `Canon ${models[i%models.length]} Drum/Toner Kit` : `Copier ${parts[i%parts.length]} Accessory`;
-      products.push({id:i,name,category:cat,price:300+(i*73)%9500,image:productImage(name,cat,i),stock:i%7===0?'Limited':'In Stock'});
+      const price=300+(i*73)%9500;
+      products.push({id:i,name,category:cat,price,mrp:price,discount:0,details:'',image:productImage(name,cat,i),stock:i%7===0?'Limited':'In Stock'});
     }
+    function loadAdminProducts(){
+      try{
+        const adminProducts=JSON.parse(localStorage.getItem('techCndProducts')||'[]');
+        if(adminProducts.length){
+          // Admin panel is the master catalog. This prevents duplicate products and
+          // allows all 120 default products to be edited from admin.html.
+          products=adminProducts.map((p,idx)=>({
+            id:p.id||('P'+(idx+1)), name:p.name||'Unnamed Product', category:p.category||'Spare Parts',
+            price:Number(p.price||0), mrp:Number(p.mrp||p.price||0), discount:Number(p.discount||0),
+            details:p.details||'', image:p.image||PLACEHOLDER, stock:p.stock||'In Stock', qty:Number(p.qty||0), admin:true
+          }));
+        }
+      }catch(e){console.warn('Admin product load failed',e)}
+    }
+    loadAdminProducts();
     let selectedCategory='All', cart=JSON.parse(localStorage.getItem('cart')||'[]'), wishlist=JSON.parse(localStorage.getItem('wishlist')||'[]'), compare=JSON.parse(localStorage.getItem('compare')||'[]');
+    const ORDER_KEY='techCndOrders';
+    const UPI_ID='techcndcopier@upi'; // এখানে আপনার real UPI ID বসান
+    const UPI_NAME='TECH CND Copier Solution';
 
     function money(n){return '₹'+Number(n).toLocaleString('en-IN')}
+    function upiUrl(orderId,amount){return `upi://pay?pa=${encodeURIComponent(UPI_ID)}&pn=${encodeURIComponent(UPI_NAME)}&am=${Number(amount||0).toFixed(2)}&cu=INR&tn=${encodeURIComponent('Tech CND Order '+orderId)}`}
+    function qrImg(data,size=220){return `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encodeURIComponent(data)}`}
+    function paymentBox(orderId,total){const u=upiUrl(orderId,total);return `<div class='mt-4 border rounded-2xl p-4 bg-yellow-50 text-center'><h4 class='font-black text-lg text-slate-900'>Automatic Payment QR</h4><p class='text-xs text-gray-600 mb-2'>Amount: <b>${money(total)}</b> • UPI: <b>${UPI_ID}</b></p><img src='${qrImg(u)}' class='mx-auto w-52 h-52 bg-white border rounded-xl p-2' alt='Payment QR'><a href='${u}' class='block mt-3 bg-slate-900 text-white rounded p-3 font-bold'>Pay Now by UPI</a><p class='text-[11px] text-gray-500 mt-2'>Payment করার পর screenshot WhatsApp করুন। Admin payment status update করবে।</p></div>`}
     function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1800)}
     function save(){localStorage.setItem('cart',JSON.stringify(cart));localStorage.setItem('wishlist',JSON.stringify(wishlist));localStorage.setItem('compare',JSON.stringify(compare));updateCounts()}
     function updateCounts(){document.getElementById('cartCount').textContent=cart.reduce((s,x)=>s+x.qty,0);document.getElementById('cartAmount').textContent=money(cart.reduce((s,x)=>s+x.price*x.qty,0));document.getElementById('wishlistCount').textContent=wishlist.length;document.getElementById('compareCount').textContent=compare.length}
     function initCats(){
       document.getElementById('navCategories').innerHTML=categories.map(c=>`<button onclick="filterCategory('${c.name}')" class="px-4 py-3 hover:text-red-main ${c.name==='All'?'text-red-main border-b-2 border-red-main':''}">${c.name}</button>`).join('');
-      document.getElementById('categoryCards').innerHTML=categories.map(c=>`<button onclick="filterCategory('${c.name}')" class="bg-white border p-4 rounded shadow-sm hover:border-red-main cursor-pointer transition"><i class="fas ${c.icon} text-2xl text-gray-600 mb-2"></i><p class="text-xs font-bold uppercase">${c.name}</p></button>`).join('');
+      document.getElementById('categoryCards').innerHTML=categories.map(c=>`<button onclick="filterCategory('${c.name}')" class="bg-white border p-4 rounded-2xl shadow-sm hover:border-red-main hover:shadow-lg cursor-pointer transition"><i class="fas ${c.icon} text-2xl text-gray-600 mb-2"></i><p class="text-xs font-bold uppercase">${c.name}</p></button>`).join('');
     }
     function render(list){
       document.getElementById('resultInfo').textContent=`Showing ${list.length} products`;
       const grid=document.getElementById('productGrid');
       if(!list.length){grid.innerHTML='<p class="col-span-full text-center text-gray-500 py-8">No products found.</p>';return}
-      grid.innerHTML=list.map(p=>`<div class="bg-white border rounded p-3 relative shadow-sm hover:shadow-md transition flex flex-col justify-between">
+      grid.innerHTML=list.map(p=>`<div class="bg-white border rounded-2xl p-3 relative shadow-sm hover:shadow-xl hover:-translate-y-1 transition flex flex-col justify-between">
         <span class="absolute top-2 left-2 bg-red-main text-white text-[9px] font-bold px-1.5 py-0.5 rounded">#${p.id}</span>
         <span class="absolute top-2 right-2 ${p.stock==='In Stock'?'bg-green-600':'bg-yellow-500'} text-white text-[9px] font-bold px-1.5 py-0.5 rounded">${p.stock}</span>
         <div class="h-36 w-full bg-gray-50 rounded flex items-center justify-center mb-3 overflow-hidden p-2"><img src="${p.image}" onerror="this.src='images/tech-cnd-placeholder.svg'" alt="${p.name}" class="object-contain h-full w-full"></div>
-        <span class="text-[9px] text-gray-400 font-bold uppercase">${p.category}</span><h4 class="text-sm font-bold text-gray-700 line-clamp-2 min-h-[2.5rem] mt-0.5">${p.name}</h4><p class="text-red-main font-extrabold text-base mt-1">${money(p.price)}</p>
-        <div class="grid grid-cols-2 gap-2 mt-3"><button onclick="addToCart(${p.id})" class="bg-red-main text-white text-xs font-bold py-2 rounded hover:bg-red-700"><i class="fas fa-cart-plus"></i> Cart</button><button onclick="buyNow(${p.id})" class="bg-green-600 text-white text-xs font-bold py-2 rounded hover:bg-green-700">Buy</button></div>
+        <span class="text-[9px] text-gray-400 font-bold uppercase">${p.category}</span><h4 class="text-sm font-bold text-gray-700 line-clamp-2 min-h-[2.5rem] mt-0.5">${p.name}</h4><p class="text-red-main font-extrabold text-base mt-1">${money(p.price)} ${p.discount?`<span class='text-[10px] bg-green-100 text-green-700 px-1 rounded'>${p.discount}% OFF</span>`:''}</p>${p.mrp&&p.mrp>p.price?`<p class='text-xs text-gray-400 line-through'>MRP ${money(p.mrp)}</p>`:''}${p.details?`<p class='text-[11px] text-gray-500 line-clamp-2 mt-1'>${p.details}</p>`:''}
+        <div class="grid grid-cols-2 gap-2 mt-3">${p.stock==='Out of Stock'?`<button disabled class='bg-gray-300 text-gray-600 text-xs font-bold py-2 rounded col-span-2'>Out of Stock</button>`:`<button onclick='addToCart("${p.id}")' class='bg-red-main text-white text-xs font-bold py-2 rounded hover:bg-red-700'><i class='fas fa-cart-plus'></i> Cart</button><button onclick='buyNow("${p.id}")' class='bg-green-600 text-white text-xs font-bold py-2 rounded hover:bg-green-700'>Buy</button>`}</div>
         <div class="grid grid-cols-2 gap-2 mt-2"><button onclick="toggleWishlist(${p.id})" class="border text-xs py-1 rounded hover:border-red-main">♡ Wishlist</button><button onclick="toggleCompare(${p.id})" class="border text-xs py-1 rounded hover:border-red-main">⇄ Compare</button></div>
       </div>`).join('')
     }
@@ -207,23 +257,118 @@
       const sort=document.getElementById('sortSelect').value; if(sort==='low')list.sort((a,b)=>a.price-b.price); if(sort==='high')list.sort((a,b)=>b.price-a.price); if(sort==='name')list.sort((a,b)=>a.name.localeCompare(b.name)); render(list)
     }
     function filterCategory(c){selectedCategory=c;document.getElementById('currentCategoryTitle').textContent=(c==='All'?'All Products':c+' Catalog');applyFilters();document.getElementById('products').scrollIntoView({behavior:'smooth'})}
-    function addToCart(id){const p=products.find(x=>x.id===id), item=cart.find(x=>x.id===id); item?item.qty++:cart.push({...p,qty:1}); save();toast('Added to cart')}
+    function addToCart(id){const p=products.find(x=>String(x.id)===String(id)); if(!p||p.stock==='Out of Stock'){toast('Out of stock');return} const item=cart.find(x=>String(x.id)===String(id)); item?item.qty++:cart.push({...p,qty:1}); save();toast('Added to cart')}
     function buyNow(id){addToCart(id);openCartModal()}
-    function toggleWishlist(id){const p=products.find(x=>x.id===id); wishlist.some(x=>x.id===id)?wishlist=wishlist.filter(x=>x.id!==id):wishlist.push(p); save();toast('Wishlist updated')}
-    function toggleCompare(id){const p=products.find(x=>x.id===id); if(compare.some(x=>x.id===id)) compare=compare.filter(x=>x.id!==id); else { if(compare.length>=4){toast('Compare max 4 items');return} compare.push(p)} save();toast('Compare updated')}
+    function toggleWishlist(id){const p=products.find(x=>String(x.id)===String(id)); wishlist.some(x=>String(x.id)===String(id))?wishlist=wishlist.filter(x=>String(x.id)!==String(id)):wishlist.push(p); save();toast('Wishlist updated')}
+    function toggleCompare(id){const p=products.find(x=>String(x.id)===String(id)); if(compare.some(x=>String(x.id)===String(id))) compare=compare.filter(x=>String(x.id)!==String(id)); else { if(compare.length>=4){toast('Compare max 4 items');return} compare.push(p)} save();toast('Compare updated')}
     function openModal(title,body){document.getElementById('modalTitle').textContent=title;document.getElementById('modalBody').innerHTML=body;document.getElementById('modal').classList.add('show')}
     function closeModal(){document.getElementById('modal').classList.remove('show')}
-    function changeQty(id,d){const item=cart.find(x=>x.id===id); if(!item)return; item.qty+=d; if(item.qty<=0)cart=cart.filter(x=>x.id!==id); save();openCartModal()}
+    function changeQty(id,d){const item=cart.find(x=>String(x.id)===String(id)); if(!item)return; item.qty+=d; if(item.qty<=0)cart=cart.filter(x=>String(x.id)!==String(id)); save();openCartModal()}
     function openCartModal(){
       const total=cart.reduce((s,x)=>s+x.price*x.qty,0);
       const items=cart.length?cart.map(x=>`<div class="flex justify-between gap-3 border-b py-3"><div><b>${x.name}</b><p class="text-xs text-gray-500">${money(x.price)} × ${x.qty}</p></div><div class="flex items-center gap-2"><button onclick="changeQty(${x.id},-1)" class="border px-2 rounded">-</button><span>${x.qty}</span><button onclick="changeQty(${x.id},1)" class="border px-2 rounded">+</button></div></div>`).join(''):'<p class="text-gray-500">Cart empty.</p>';
       openModal('Cart & Checkout',`${items}<div class="text-right font-extrabold text-lg mt-4">Total: ${money(total)}</div><div class="grid gap-2 mt-4"><input id="custName" class="border rounded p-2" placeholder="Customer Name"><input id="custPhone" class="border rounded p-2" placeholder="Phone Number"><input id="custPin" class="border rounded p-2" placeholder="Pincode"><textarea id="custAddress" class="border rounded p-2" placeholder="Full Address"></textarea><button onclick="sendOrder()" class="bg-green-600 text-white rounded p-3 font-bold"><i class="fab fa-whatsapp"></i> Send Order on WhatsApp</button></div>`)
     }
-    function sendOrder(){ if(!cart.length){toast('Cart empty');return} const name=document.getElementById('custName').value||'Customer'; const ph=document.getElementById('custPhone').value||''; const pin=document.getElementById('custPin').value||''; const addr=document.getElementById('custAddress').value||''; const total=cart.reduce((s,x)=>s+x.price*x.qty,0); let msg=`Tech CND New Order%0AName: ${encodeURIComponent(name)}%0APhone: ${encodeURIComponent(ph)}%0APincode: ${encodeURIComponent(pin)}%0AAddress: ${encodeURIComponent(addr)}%0A%0AItems:%0A`; cart.forEach(x=>msg+=`${encodeURIComponent(x.name)} - Qty ${x.qty} - ${money(x.price*x.qty)}%0A`); msg+=`%0ATotal: ${money(total)}%0AOrder ID: CND${Date.now().toString().slice(-6)}`; window.open(`https://wa.me/${phone}?text=${msg}`,'_blank') }
+    function getOrders(){try{return JSON.parse(localStorage.getItem(ORDER_KEY)||'[]')}catch(e){return []}}
+    function setOrders(o){localStorage.setItem(ORDER_KEY,JSON.stringify(o))}
+    function sendOrder(){
+      if(!cart.length){toast('Cart empty');return}
+      const name=document.getElementById('custName').value||'Customer';
+      const ph=document.getElementById('custPhone').value||'';
+      const pin=document.getElementById('custPin').value||'';
+      const addr=document.getElementById('custAddress').value||'';
+      const total=cart.reduce((s,x)=>s+x.price*x.qty,0);
+      const orderId='CND'+Date.now().toString().slice(-6);
+      const order={id:orderId,customer:name,phone:ph,status:'Order Received',tracking:'',deliveryName:'',deliveryPhone:'',paymentStatus:'Payment Pending',amount:total,upi:UPI_ID,note:'Order received. Payment QR generated. Admin will update tracking soon.',updated:new Date().toLocaleString('en-IN')};
+      const orders=getOrders(); orders.unshift(order); setOrders(orders);
+      let msg=`Tech CND New Order%0AName: ${encodeURIComponent(name)}%0APhone: ${encodeURIComponent(ph)}%0APincode: ${encodeURIComponent(pin)}%0AAddress: ${encodeURIComponent(addr)}%0A%0AItems:%0A`;
+      cart.forEach(x=>msg+=`${encodeURIComponent(x.name)} - Qty ${x.qty} - ${money(x.price*x.qty)}%0A`);
+      msg+=`%0ATotal: ${money(total)}%0AOrder ID: ${orderId}%0AStatus: Order Received%0APayment: Pending%0AUPI: ${encodeURIComponent(UPI_ID)}`;
+      openModal('Order Received',`<div class='text-center'><div class='text-4xl mb-2'>✅</div><h3 class='font-black text-xl'>Order Received</h3><p class='text-sm text-gray-600 mt-2'>Your Order ID: <b>${orderId}</b></p><p class='text-xs text-gray-500 mt-1'>এই ID দিয়ে Track Order করলে payment QR আবার দেখা যাবে।</p>${paymentBox(orderId,total)}<button onclick="window.open('https://wa.me/${phone}?text=${msg}','_blank')" class='mt-4 bg-green-600 text-white rounded p-3 font-bold w-full'><i class='fab fa-whatsapp'></i> Send WhatsApp Order</button></div>`);
+      cart=[]; save();
+    }
     function openWishlistModal(){openModal('Wishlist', wishlist.length?wishlist.map(x=>`<div class="border-b py-2 flex justify-between"><span>${x.name}</span><button onclick="addToCart(${x.id})" class="text-red-main font-bold">Add</button></div>`).join(''):'<p>No wishlist items.</p>')}
     function openCompareModal(){openModal('Compare Products', compare.length?`<div class="overflow-x-auto"><table class="w-full text-sm border"><tr class="bg-gray-100"><th class="border p-2">Name</th><th class="border p-2">Category</th><th class="border p-2">Price</th><th class="border p-2">Stock</th></tr>${compare.map(x=>`<tr><td class="border p-2">${x.name}</td><td class="border p-2">${x.category}</td><td class="border p-2">${money(x.price)}</td><td class="border p-2">${x.stock}</td></tr>`).join('')}</table></div>`:'<p>No compare items.</p>')}
-    function openTrackModal(){openModal('Track Order',`<p class="text-sm text-gray-600 mb-3">Order ID লিখুন। Demo status দেখাবে।</p><input id="trackId" class="border rounded p-2 w-full" placeholder="Example: CND123456"><button onclick="document.getElementById('trackResult').innerHTML='✅ Order received / processing. For exact status call +91 9735474770'" class="bg-red-main text-white rounded p-2 mt-3 font-bold">Track</button><p id="trackResult" class="mt-3 font-bold text-green-700"></p>`)}
+    function openTrackModal(){openModal('Track Order',`<p class="text-sm text-gray-600 mb-3">Order ID লিখুন। Example: CND123456</p><input id="trackId" class="border rounded p-2 w-full" placeholder="CND123456"><button onclick="trackOrder()" class="bg-red-main text-white rounded p-2 mt-3 font-bold w-full">Track Order</button><div id="trackResult" class="mt-3"></div>`)}
+    function trackOrder(){
+      const id=(document.getElementById('trackId').value||'').trim().toUpperCase();
+      const o=getOrders().find(x=>String(x.id).toUpperCase()===id);
+      const box=document.getElementById('trackResult');
+      if(!id){box.innerHTML='<p class="text-red-600 font-bold">Order ID দিন।</p>';return}
+      if(!o){box.innerHTML='<p class="text-red-600 font-bold">Order ID পাওয়া যায়নি। সঠিক ID দিন অথবা +91 9735474770 এ call করুন।</p>';return}
+      const steps=['Order Received','Packed','Shipped','Out for Delivery','Delivered']; const cur=steps.indexOf(o.status);
+      box.innerHTML=`<div class='border rounded-xl p-4 bg-gray-50'><h4 class='font-black text-lg'>${o.id}</h4><p class='text-sm mt-1'><b>Status:</b> <span class='text-green-700 font-bold'>${o.status}</span></p><p class='text-sm mt-1'><b>Payment:</b> <span class='font-bold ${o.paymentStatus==='Paid'?'text-green-700':'text-red-600'}'>${o.paymentStatus||'Payment Pending'}</span> ${o.amount?`• ${money(o.amount)}`:''}</p><div class='grid grid-cols-5 gap-1 my-3'>${steps.map((st,i)=>`<div class='text-center text-[10px] ${i<=cur?'text-green-700 font-bold':'text-gray-400'}'><div class='h-2 rounded ${i<=cur?'bg-green-600':'bg-gray-300'}'></div>${st}</div>`).join('')}</div>${(o.paymentStatus||'Payment Pending')!=='Paid'&&o.amount?paymentBox(o.id,o.amount):''}${o.tracking?`<a href='${o.tracking}' target='_blank' class='block bg-blue-700 text-white text-center rounded p-2 font-bold mb-2 mt-3'>Open Tracking Link</a>`:''}<p class='text-xs'><b>Delivery Boy:</b> ${o.deliveryName||'Not assigned yet'} ${o.deliveryPhone?`• <a class='text-blue-700 font-bold' href='tel:${o.deliveryPhone}'>${o.deliveryPhone}</a>`:''}</p>${o.note?`<p class='text-xs text-gray-600 mt-2'>${o.note}</p>`:''}<p class='text-[10px] text-gray-400 mt-2'>Last Update: ${o.updated||''}</p></div>`;
+    }
     initCats();updateCounts();applyFilters();
   </script>
+
+<script>
+// ===== Google Sheet Backend Connected Version =====
+const API_URL = "https://script.google.com/macros/s/AKfycbxSdAqsOtxQdHlcb_zyO91HWdb8fl2HQ3Go7NXCh_0R0wCGoofGGYuz20FtACzfDtVW/exec";
+function normProduct(p,i=0){return {id:p.id||('P'+i),name:p.name||'',category:p.category||'Spare Parts',price:Number(p.price||0),mrp:Number(p.mrp||p.price||0),discount:Number(p.discount||0),details:p.details||'',image:p.image||'images/tech-cnd-placeholder.svg',stock:p.stock||p.stockStatus||'In Stock'}}
+function normOrder(o){return {id:o.id||o.orderId||'',customer:o.customer||o.customerName||'',phone:o.phone||o.mobile||'',status:o.status||o.orderStatus||'Order Received',paymentStatus:o.paymentStatus||'Payment Pending',amount:Number(o.amount||0),tracking:o.tracking||o.trackingLink||'',deliveryName:o.deliveryName||o.deliveryBoyName||'',deliveryPhone:o.deliveryPhone||o.deliveryBoyMobile||'',note:o.note||'',updated:o.updated||o.date||''}}
+async function apiGet(action){const r=await fetch(API_URL+'?action='+action+'&t='+Date.now()); if(!r.ok) throw new Error('API error'); return await r.json();}
+async function apiPost(data){const r=await fetch(API_URL,{method:'POST',body:JSON.stringify(data)}); if(!r.ok) throw new Error('API error'); return await r.json();}
+async function loadSheetProducts(){try{const data=await apiGet('products'); const arr=(Array.isArray(data)?data:[]).filter(x=>x&&x.id).map(normProduct); if(arr.length){products=arr; localStorage.setItem('techCndProducts',JSON.stringify(arr)); applyFilters();}}catch(e){console.warn('Sheet product load failed',e)}}
+async function getSheetOrders(){try{const data=await apiGet('orders'); const arr=(Array.isArray(data)?data:[]).filter(x=>x&&(x.orderId||x.id)).map(normOrder); localStorage.setItem(ORDER_KEY,JSON.stringify(arr)); return arr;}catch(e){return JSON.parse(localStorage.getItem(ORDER_KEY)||'[]')}}
+function getOrders(){try{return JSON.parse(localStorage.getItem(ORDER_KEY)||'[]')}catch(e){return []}}
+function setOrders(o){localStorage.setItem(ORDER_KEY,JSON.stringify(o))}
+async function sendOrder(){
+  if(!cart.length){toast('Cart empty');return}
+  const name=document.getElementById('custName').value||'Customer'; const ph=document.getElementById('custPhone').value||''; const pin=document.getElementById('custPin').value||''; const addr=document.getElementById('custAddress').value||'';
+  const total=cart.reduce((s,x)=>s+x.price*x.qty,0); const itemsText=cart.map(x=>x.name+' × '+x.qty).join(', ');
+  let orderId='CND'+Date.now().toString().slice(-6);
+  try{const res=await apiPost({action:'createOrder',order:{customerName:name,mobile:ph,address:addr+' PIN: '+pin,productName:itemsText,amount:total}}); if(res&&res.orderId) orderId=res.orderId;}catch(e){console.warn('Sheet order save failed',e)}
+  const order={id:orderId,customer:name,phone:ph,status:'Order Received',tracking:'',deliveryName:'',deliveryPhone:'',paymentStatus:'Payment Pending',amount:total,upi:UPI_ID,note:'Order received. Payment QR generated. Admin will update tracking soon.',updated:new Date().toLocaleString('en-IN')};
+  const orders=getOrders(); orders.unshift(order); setOrders(orders);
+  let msg=`Tech CND New Order%0AName: ${encodeURIComponent(name)}%0APhone: ${encodeURIComponent(ph)}%0APincode: ${encodeURIComponent(pin)}%0AAddress: ${encodeURIComponent(addr)}%0A%0AItems:%0A`;
+  cart.forEach(x=>msg+=`${encodeURIComponent(x.name)} - Qty ${x.qty} - ${money(x.price*x.qty)}%0A`);
+  msg+=`%0ATotal: ${money(total)}%0AOrder ID: ${orderId}%0AStatus: Order Received%0APayment: Pending%0AUPI: ${encodeURIComponent(UPI_ID)}`;
+  openModal('Order Received',`<div class='text-center'><div class='text-4xl mb-2'>✅</div><h3 class='font-black text-xl'>Order Received</h3><p class='text-sm text-gray-600 mt-2'>Your Order ID: <b>${orderId}</b></p><p class='text-xs text-gray-500 mt-1'>এই ID দিয়ে Track Order করলে payment QR আবার দেখা যাবে।</p>${paymentBox(orderId,total)}<button onclick="window.open('https://wa.me/${phone}?text=${msg}','_blank')" class='mt-4 bg-green-600 text-white rounded p-3 font-bold w-full'><i class='fab fa-whatsapp'></i> Send WhatsApp Order</button></div>`);
+  cart=[]; save();
+}
+async function trackOrder(){
+  const id=(document.getElementById('trackId').value||'').trim().toUpperCase(); const box=document.getElementById('trackResult'); if(!id){box.innerHTML='<p class="text-red-600 font-bold">Order ID দিন।</p>';return}
+  const orders=await getSheetOrders(); const o=orders.find(x=>String(x.id).toUpperCase()===id);
+  if(!o){box.innerHTML='<p class="text-red-600 font-bold">Order ID পাওয়া যায়নি। সঠিক ID দিন অথবা +91 9735474770 এ call করুন।</p>';return}
+  const steps=['Order Received','Packed','Shipped','Out for Delivery','Delivered']; const cur=Math.max(0,steps.indexOf(o.status));
+  box.innerHTML=`<div class='border rounded-xl p-4 bg-gray-50'><h4 class='font-black text-lg'>${o.id}</h4><p class='text-sm mt-1'><b>Status:</b> <span class='text-green-700 font-bold'>${o.status}</span></p><p class='text-sm mt-1'><b>Payment:</b> <span class='font-bold ${o.paymentStatus==='Paid'?'text-green-700':'text-red-600'}'>${o.paymentStatus||'Payment Pending'}</span> ${o.amount?`• ${money(o.amount)}`:''}</p><div class='grid grid-cols-5 gap-1 my-3'>${steps.map((st,i)=>`<div class='text-center text-[10px] ${i<=cur?'text-green-700 font-bold':'text-gray-400'}'><div class='h-2 rounded ${i<=cur?'bg-green-600':'bg-gray-300'}'></div>${st}</div>`).join('')}</div>${(o.paymentStatus||'Payment Pending')!=='Paid'&&o.amount?paymentBox(o.id,o.amount):''}${o.tracking?`<a href='${o.tracking}' target='_blank' class='block bg-blue-700 text-white text-center rounded p-2 font-bold mb-2 mt-3'>Open Tracking Link</a>`:''}<p class='text-xs'><b>Delivery Boy:</b> ${o.deliveryName||'Not assigned yet'} ${o.deliveryPhone?`• <a class='text-blue-700 font-bold' href='tel:${o.deliveryPhone}'>${o.deliveryPhone}</a>`:''}</p>${o.note?`<p class='text-xs text-gray-600 mt-2'>${o.note}</p>`:''}<p class='text-[10px] text-gray-400 mt-2'>Last Update: ${o.updated||''}</p></div>`;
+}
+loadSheetProducts();
+</script>
+
+  <button id="installAppBtn" onclick="installTechCndApp()" class="hidden fixed bottom-4 left-4 z-50 bg-red-main text-white px-4 py-3 rounded-full shadow-lg font-bold text-sm">
+    <i class="fas fa-download mr-1"></i> Install App
+  </button>
+
+<script>
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function () {
+      navigator.serviceWorker.register("sw.js").catch(function (error) {
+        console.log("Service Worker registration failed:", error);
+      });
+    });
+  }
+
+  let deferredInstallPrompt;
+  window.addEventListener("beforeinstallprompt", function (event) {
+    event.preventDefault();
+    deferredInstallPrompt = event;
+    const btn = document.getElementById("installAppBtn");
+    if (btn) btn.classList.remove("hidden");
+  });
+
+  async function installTechCndApp() {
+    if (!deferredInstallPrompt) {
+      alert("Install option browser menu থেকে Add to Home Screen / Install App চাপুন।");
+      return;
+    }
+    deferredInstallPrompt.prompt();
+    await deferredInstallPrompt.userChoice;
+    deferredInstallPrompt = null;
+    const btn = document.getElementById("installAppBtn");
+    if (btn) btn.classList.add("hidden");
+  }
+</script>
 </body>
 </html>

@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /admin.html
+Disallow: /ADMIN-README.txt
+Disallow: /GOOGLE-SHEET-SETUP.txt
+
+# Add your live website sitemap URL here after publish:
+# Sitemap: https://your-domain.com/sitemap.xml

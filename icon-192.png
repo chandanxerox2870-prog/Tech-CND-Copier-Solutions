@@ -1,0 +1,18 @@
+Tech CND Google Sheet Backend Connected
+
+API URL connected:
+https://script.google.com/macros/s/AKfycbxSdAqsOtxQdHlcb_zyO91HWdb8fl2HQ3Go7NXCh_0R0wCGoofGGYuz20FtACzfDtVW/exec
+
+Required Apps Script deploy settings:
+Execute as: Me
+Who has access: Anyone
+
+Admin PIN: 1234
+Admin file: admin.html
+
+Features:
+- Public products load from Google Sheet Products tab
+- Admin product add/edit/delete updates Google Sheet
+- Customer order saves to Google Sheet Orders tab
+- Track Order reads latest status from Google Sheet
+- Admin can update payment status, order status, tracking link, delivery boy name/mobile
