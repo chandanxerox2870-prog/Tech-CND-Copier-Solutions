@@ -304,7 +304,7 @@ async function saveProduct(){
   let arr=getProducts(); const idx=arr.findIndex(x=>String(x.id)===String(id)); idx>=0?arr[idx]=item:arr.unshift(item); setProducts(arr);
   try{const res=await apiPost({action:'saveProduct',product:toSheetProduct(item)}); if(!res.ok) throw new Error('save failed'); alert('Product Google Sheet এ saved হয়েছে।'); resetForm(); await loadProductsFromSheet();}catch(e){console.warn(e); alert('Sheet save problem। Local save হয়েছে। Apps Script deploy check করুন।'); resetForm();}
 }
-async function delProduct(id){if(!confirm('Delete this product?'))return; setProducts(getProducts().filter(p=>String(p.id)!==String(id))); try{await apiPost({action:'deleteProduct',id}); await loadProductsFromSheet();}catch(e){alert('Sheet delete problem।')}}
+async function delProduct(id){if(!confirm('Delete this product?'))return; setProducts(getProducts().filter(p=>String(p.id)!==String(id))); try{await apiPost({action:'deleteProduct',id}); await loadProductsFromSheet();}catch(e){}}
 async function changeStock(id,status){let arr=getProducts(); const x=arr.find(p=>String(p.id)===String(id)); if(x){x.stock=status; if(status==='Out of Stock')x.qty=0; setProducts(arr); try{await apiPost({action:'saveProduct',product:toSheetProduct(x)});}catch(e){console.warn(e)}}}
 async function seedDemo(silent=false){if(getProducts().length && !silent && !confirm('বর্তমান Sheet product replace/append করে 120 products load করবেন?'))return; const arr=defaultProducts(); setProducts(arr); try{for(const p of arr) await apiPost({action:'saveProduct',product:toSheetProduct(p)}); if(!silent) alert('120 products Google Sheet এ loaded হয়েছে।')}catch(e){if(!silent) alert('Sheet save problem। Local loaded হয়েছে।')}}
 async function saveOrder(){
