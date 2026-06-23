@@ -4,348 +4,1062 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tech CND Admin Panel</title>
-  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-
-  <!-- PWA App Install -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#ce1212">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-title" content="Tech CND">
-  <link rel="apple-touch-icon" href="icon-192.png">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --red: #ce1212;
+      --red-dark: #a50e0e;
+      --dark: #0f172a;
+      --sidebar-bg: #0f172a;
+      --sidebar-w: 220px;
+      --sidebar-w-collapsed: 64px;
+      --header-h: 56px;
+      --text: #1e293b;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --bg: #f1f5f9;
+      --white: #ffffff;
+      --green: #16a34a;
+      --yellow: #ca8a04;
+      --blue: #1d4ed8;
+    }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+    /* ===== LOGIN ===== */
+    #loginBox {
+      min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #7f1d1d 100%);
+    }
+    .login-card {
+      background: white; width: 100%; max-width: 380px; border-radius: 20px;
+      padding: 40px 32px; box-shadow: 0 32px 64px rgba(0,0,0,.4);
+    }
+    .login-logo { width: 60px; height: 60px; background: var(--red); border-radius: 14px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 26px; color: white; }
+    .login-card h1 { text-align: center; font-size: 22px; font-weight: 900; margin-bottom: 4px; }
+    .login-card p { text-align: center; font-size: 12px; color: var(--muted); margin-bottom: 24px; }
+    .login-card input { width: 100%; border: 2px solid var(--border); border-radius: 12px; padding: 12px 14px; font-size: 15px; outline: none; transition: border .2s; }
+    .login-card input:focus { border-color: var(--red); }
+    .login-card button { width: 100%; margin-top: 12px; background: var(--red); color: white; border: none; border-radius: 12px; padding: 13px; font-size: 15px; font-weight: 800; cursor: pointer; transition: background .2s; }
+    .login-card button:hover { background: var(--red-dark); }
+    .login-hint { font-size: 11px; color: var(--muted); text-align: center; margin-top: 12px; }
+
+    /* ===== LAYOUT ===== */
+    #panel { display: none; min-height: 100vh; }
+
+    /* Sidebar */
+    .sidebar {
+      position: fixed; top: 0; left: 0; bottom: 0; width: var(--sidebar-w);
+      background: var(--sidebar-bg); z-index: 100; transition: width .25s ease;
+      display: flex; flex-direction: column; overflow: hidden;
+    }
+    .sidebar.collapsed { width: var(--sidebar-w-collapsed); }
+    .sidebar-header {
+      height: var(--header-h); display: flex; align-items: center; padding: 0 16px;
+      border-bottom: 1px solid rgba(255,255,255,.08); flex-shrink: 0;
+    }
+    .sidebar-logo { display: flex; align-items: center; gap: 10px; overflow: hidden; }
+    .logo-icon { width: 34px; height: 34px; background: var(--red); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 15px; flex-shrink: 0; }
+    .logo-text { color: white; font-size: 14px; font-weight: 900; white-space: nowrap; line-height: 1.2; }
+    .logo-sub { color: rgba(255,255,255,.45); font-size: 10px; }
+    .sidebar-toggle {
+      margin-left: auto; background: none; border: none; color: rgba(255,255,255,.5);
+      cursor: pointer; font-size: 16px; padding: 4px; flex-shrink: 0;
+    }
+    .sidebar-toggle:hover { color: white; }
+
+    .sidebar-nav { flex: 1; overflow-y: auto; padding: 12px 0; }
+    .sidebar-nav::-webkit-scrollbar { width: 4px; }
+    .sidebar-nav::-webkit-scrollbar-thumb { background: rgba(255,255,255,.15); border-radius: 2px; }
+
+    .nav-label {
+      font-size: 10px; font-weight: 700; color: rgba(255,255,255,.3); letter-spacing: .08em;
+      padding: 14px 20px 6px; white-space: nowrap; text-transform: uppercase; overflow: hidden;
+    }
+    .collapsed .nav-label { opacity: 0; height: 0; padding: 0; }
+
+    .nav-item {
+      display: flex; align-items: center; gap: 12px; padding: 10px 20px;
+      cursor: pointer; color: rgba(255,255,255,.6); font-size: 13px; font-weight: 600;
+      border-left: 3px solid transparent; transition: all .15s; white-space: nowrap;
+      border: none; background: none; width: 100%; text-align: left;
+    }
+    .nav-item:hover { background: rgba(255,255,255,.06); color: white; }
+    .nav-item.active { background: rgba(206,18,18,.18); color: white; border-left: 3px solid var(--red); }
+    .nav-item i { width: 18px; text-align: center; font-size: 15px; flex-shrink: 0; }
+    .nav-item-text { white-space: nowrap; overflow: hidden; }
+    .nav-badge {
+      margin-left: auto; background: var(--red); color: white; font-size: 10px;
+      font-weight: 800; padding: 1px 6px; border-radius: 10px; flex-shrink: 0;
+    }
+
+    .sidebar-footer {
+      border-top: 1px solid rgba(255,255,255,.08); padding: 12px 0; flex-shrink: 0;
+    }
+
+    /* Main content */
+    .main {
+      margin-left: var(--sidebar-w); transition: margin-left .25s ease; min-height: 100vh; display: flex; flex-direction: column;
+    }
+    .main.expanded { margin-left: var(--sidebar-w-collapsed); }
+
+    .topbar {
+      height: var(--header-h); background: white; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; padding: 0 24px; gap: 16px; position: sticky; top: 0; z-index: 50;
+    }
+    .topbar-title { font-size: 16px; font-weight: 800; color: var(--text); }
+    .topbar-sub { font-size: 12px; color: var(--muted); }
+    .topbar-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+    .topbar-btn {
+      display: flex; align-items: center; gap: 6px; padding: 7px 14px;
+      border-radius: 8px; border: none; cursor: pointer; font-size: 12px; font-weight: 700; transition: all .15s;
+    }
+    .btn-outline { background: white; border: 1.5px solid var(--border); color: var(--text); }
+    .btn-outline:hover { border-color: var(--red); color: var(--red); }
+    .btn-red { background: var(--red); color: white; }
+    .btn-red:hover { background: var(--red-dark); }
+    .btn-green { background: var(--green); color: white; }
+    .btn-dark { background: var(--dark); color: white; }
+
+    .content { padding: 24px; flex: 1; }
+
+    /* Sections (right panel content) */
+    .section { display: none; }
+    .section.active { display: block; }
+
+    /* Stats row */
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+    .stat-card {
+      background: white; border-radius: 14px; padding: 18px 20px;
+      border: 1px solid var(--border); display: flex; align-items: center; gap: 14px;
+    }
+    .stat-icon { width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+    .stat-icon.red { background: #fef2f2; color: var(--red); }
+    .stat-icon.green { background: #f0fdf4; color: var(--green); }
+    .stat-icon.yellow { background: #fefce8; color: var(--yellow); }
+    .stat-icon.blue { background: #eff6ff; color: var(--blue); }
+    .stat-val { font-size: 26px; font-weight: 900; line-height: 1; }
+    .stat-lbl { font-size: 11px; color: var(--muted); font-weight: 600; margin-top: 2px; }
+
+    /* Two-col layout */
+    .two-col { display: grid; grid-template-columns: 380px 1fr; gap: 20px; align-items: start; }
+
+    /* Card */
+    .card { background: white; border-radius: 14px; border: 1px solid var(--border); overflow: hidden; }
+    .card-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .card-title { font-size: 14px; font-weight: 800; }
+    .card-body { padding: 20px; }
+
+    /* Form */
+    .form-group { margin-bottom: 14px; }
+    .form-label { display: block; font-size: 11px; font-weight: 700; color: var(--muted); margin-bottom: 5px; text-transform: uppercase; letter-spacing: .04em; }
+    .form-control {
+      width: 100%; border: 1.5px solid var(--border); border-radius: 9px; padding: 9px 12px;
+      font-size: 13px; outline: none; transition: border .2s; background: white;
+    }
+    .form-control:focus { border-color: var(--red); }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    textarea.form-control { height: 80px; resize: vertical; }
+
+    /* Image upload */
+    .img-upload-area {
+      border: 2px dashed var(--border); border-radius: 10px; padding: 16px;
+      text-align: center; cursor: pointer; transition: border .2s; position: relative;
+    }
+    .img-upload-area:hover { border-color: var(--red); }
+    .img-upload-area input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; }
+    .img-preview { width: 100%; height: 140px; object-fit: contain; border-radius: 8px; background: #f8fafc; display: block; margin-top: 10px; }
+
+    /* Product list cards */
+    .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; }
+    .product-card {
+      background: white; border-radius: 12px; border: 1px solid var(--border); padding: 14px;
+      display: flex; flex-direction: column; gap: 8px; transition: box-shadow .15s;
+    }
+    .product-card:hover { box-shadow: 0 6px 20px rgba(0,0,0,.08); }
+    .product-card-img { width: 100%; height: 100px; object-fit: contain; background: #f8fafc; border-radius: 8px; }
+    .product-card-name { font-size: 12px; font-weight: 700; color: var(--text); line-height: 1.3; }
+    .product-card-cat { font-size: 10px; color: var(--muted); font-weight: 600; }
+    .product-card-price { font-size: 14px; font-weight: 900; color: var(--red); }
+    .badge { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 6px; display: inline-block; }
+    .badge-green { background: #f0fdf4; color: var(--green); }
+    .badge-yellow { background: #fefce8; color: var(--yellow); }
+    .badge-red { background: #fef2f2; color: var(--red); }
+    .product-card-actions { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+    .action-btn { font-size: 10px; font-weight: 700; padding: 4px 10px; border-radius: 6px; border: none; cursor: pointer; transition: all .15s; }
+    .action-btn.edit { background: var(--dark); color: white; }
+    .action-btn.edit:hover { background: #334155; }
+    .action-btn.del { background: var(--red); color: white; }
+    .action-btn.del:hover { background: var(--red-dark); }
+    .action-btn.sm { background: var(--border); color: var(--text); }
+    .action-btn.sm:hover { background: #cbd5e1; }
+
+    /* Order cards */
+    .order-card {
+      background: white; border-radius: 12px; border: 1px solid var(--border); padding: 16px; margin-bottom: 12px;
+    }
+    .order-id { font-weight: 800; font-size: 14px; }
+    .order-meta { font-size: 12px; color: var(--muted); margin-top: 3px; }
+    .order-row { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px; }
+
+    /* Toolbar */
+    .toolbar { display: flex; gap: 10px; align-items: center; margin-bottom: 18px; flex-wrap: wrap; }
+    .search-box {
+      flex: 1; min-width: 180px; border: 1.5px solid var(--border); border-radius: 9px;
+      padding: 8px 14px 8px 36px; font-size: 13px; outline: none; background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='%2394a3b8' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.44 1.247a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z'/%3E%3C/svg%3E") no-repeat 12px center;
+      transition: border .2s;
+    }
+    .search-box:focus { border-color: var(--red); }
+
+    /* Divider */
+    .divider { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+
+    /* Toast */
+    #toast {
+      position: fixed; right: 20px; bottom: 28px; z-index: 999; background: #1e293b; color: white;
+      padding: 10px 18px; border-radius: 10px; font-size: 13px; font-weight: 600; display: none;
+      box-shadow: 0 8px 24px rgba(0,0,0,.25);
+    }
+    #toast.show { display: block; animation: slideIn .2s; }
+    @keyframes slideIn { from { transform: translateY(10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+    /* Category filter pills */
+    .cat-pills { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+    .cat-pill {
+      font-size: 11px; font-weight: 700; padding: 5px 12px; border-radius: 20px;
+      border: 1.5px solid var(--border); background: white; cursor: pointer; transition: all .15s; color: var(--text);
+    }
+    .cat-pill:hover, .cat-pill.active { background: var(--red); color: white; border-color: var(--red); }
+
+    /* Dashboard quick stats */
+    .quick-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-bottom: 20px; }
+    .quick-item { background: white; border-radius: 12px; border: 1px solid var(--border); padding: 16px; }
+    .quick-item-title { font-size: 12px; color: var(--muted); font-weight: 600; margin-bottom: 6px; }
+    .quick-item-val { font-size: 22px; font-weight: 900; }
+    .info-banner { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 10px; padding: 12px 16px; font-size: 12px; color: #1e40af; font-weight: 600; margin-bottom: 16px; }
+    .warn-banner { background: #fefce8; border: 1px solid #fde68a; border-radius: 10px; padding: 12px 16px; font-size: 12px; color: #92400e; font-weight: 600; margin-bottom: 16px; }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .two-col { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 600px) {
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+      .content { padding: 14px; }
+    }
+  </style>
 </head>
-<body class="bg-slate-100 min-h-screen text-slate-800">
-  <div id="loginBox" class="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-slate-950 via-slate-800 to-red-900">
-    <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl p-8 border">
-      <div class="text-center mb-6">
-        <div class="w-16 h-16 mx-auto bg-red-600 text-white rounded-2xl flex items-center justify-center text-3xl"><i class="fa-solid fa-shield-halved"></i></div>
-        <h1 class="text-2xl font-black mt-4">Tech CND Admin</h1>
-        <p class="text-sm text-gray-500">Product, Stock, Discount, Image Management</p>
+<body>
+<div id="toast"></div>
+
+<!-- ===== LOGIN ===== -->
+<div id="loginBox">
+  <div class="login-card">
+    <div class="login-logo"><i class="fa-solid fa-shield-halved"></i></div>
+    <h1>Tech CND Admin</h1>
+    <p>Product • Order • Stock Management</p>
+    <input id="pin" type="password" placeholder="Admin PIN লিখুন" onkeydown="if(event.key==='Enter')login()">
+    <button onclick="login()"><i class="fa-solid fa-unlock mr-1"></i> Login</button>
+    <p class="login-hint">Default PIN: <b>1234</b> — publish এর আগে পরিবর্তন করবেন।</p>
+  </div>
+</div>
+
+<!-- ===== ADMIN PANEL ===== -->
+<div id="panel">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">
+        <div class="logo-icon"><i class="fa-solid fa-print"></i></div>
+        <div>
+          <div class="logo-text">TECH CND</div>
+          <div class="logo-sub">Admin Panel</div>
+        </div>
       </div>
-      <input id="pin" type="password" class="border w-full rounded-xl p-3 focus:outline-red-500" placeholder="Admin PIN">
-      <button onclick="login()" class="mt-4 w-full bg-red-600 hover:bg-red-700 text-white rounded-xl p-3 font-bold">Login</button>
-      <p class="text-xs text-gray-400 mt-3">Default PIN: <b>1234</b> — publish করার আগে code এর PIN বদলে দেবেন।</p>
+      <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-label">MAIN</div>
+      <button class="nav-item active" onclick="showSection('dashboard')">
+        <i class="fas fa-chart-pie"></i><span class="nav-item-text">Dashboard</span>
+      </button>
+
+      <div class="nav-label">CATALOG</div>
+      <button class="nav-item" onclick="showSection('addProduct')">
+        <i class="fas fa-plus-circle"></i><span class="nav-item-text">Add Product</span>
+      </button>
+      <button class="nav-item" onclick="showSection('productList')">
+        <i class="fas fa-boxes-stacked"></i><span class="nav-item-text">Product List</span>
+        <span class="nav-badge" id="navProdCount">0</span>
+      </button>
+      <button class="nav-item" onclick="showSection('categories')">
+        <i class="fas fa-tags"></i><span class="nav-item-text">Categories</span>
+      </button>
+
+      <div class="nav-label">ORDERS</div>
+      <button class="nav-item" onclick="showSection('orderList')">
+        <i class="fas fa-list-check"></i><span class="nav-item-text">All Orders</span>
+        <span class="nav-badge" id="navOrderCount">0</span>
+      </button>
+      <button class="nav-item" onclick="showSection('orderUpdate')">
+        <i class="fas fa-truck-fast"></i><span class="nav-item-text">Update Order</span>
+      </button>
+
+      <div class="nav-label">TOOLS</div>
+      <button class="nav-item" onclick="showSection('notes')">
+        <i class="fas fa-sticky-note"></i><span class="nav-item-text">Notes</span>
+      </button>
+      <button class="nav-item" onclick="showSection('settings')">
+        <i class="fas fa-gear"></i><span class="nav-item-text">Settings</span>
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button class="nav-item" onclick="logout()" style="color:#f87171;">
+        <i class="fas fa-right-from-bracket"></i><span class="nav-item-text">Logout</span>
+      </button>
     </div>
   </div>
 
-  <div id="panel" class="hidden">
-    <header class="bg-slate-950 text-white sticky top-0 z-20 shadow">
-      <div class="max-w-7xl mx-auto p-4 flex flex-wrap gap-3 justify-between items-center">
-        <div><h1 class="font-black text-xl">TECH CND Admin Panel</h1><p class="text-xs text-slate-300">Admin panel আলাদা — public website এ কোনো link নেই</p></div>
-        <div class="flex flex-wrap gap-2"><button id="productTabBtn" onclick="showTab('products')" class="bg-red-600 px-5 py-2 rounded-lg font-bold">Products</button><button id="orderTabBtn" onclick="showTab('orders')" class="bg-white/10 px-5 py-2 rounded-lg font-bold">Orders</button><button onclick="seedDemo()" class="bg-white/10 px-4 py-2 rounded-lg font-bold">Load 120 Products</button><button onclick="logout()" class="bg-red-600 px-4 py-2 rounded-lg font-bold">Logout</button></div>
-      </div>
-    </header>
+  <!-- MAIN -->
+  <div class="main" id="mainContent">
 
-    <main class="max-w-7xl mx-auto p-4">
-      <div class="bg-white rounded-2xl shadow border p-2 mb-4 flex gap-2 sticky top-[82px] z-10">
-        <button id="productTabBtn2" onclick="showTab('products')" class="flex-1 bg-red-600 text-white rounded-xl py-3 font-black"><i class="fa-solid fa-boxes-stacked"></i> Product</button>
-        <button id="orderTabBtn2" onclick="showTab('orders')" class="flex-1 bg-slate-100 text-slate-900 rounded-xl py-3 font-black"><i class="fa-solid fa-truck-fast"></i> Order</button>
+    <!-- Topbar -->
+    <div class="topbar">
+      <div>
+        <div class="topbar-title" id="topbarTitle">Dashboard</div>
+        <div class="topbar-sub" id="topbarSub">Tech CND Admin Panel</div>
       </div>
-      <div id="productsTab">
-      <section class="grid md:grid-cols-4 gap-4 mb-4">
-        <div class="bg-white rounded-2xl p-4 shadow border"><p class="text-xs text-gray-500">Total Products</p><b id="statTotal" class="text-3xl">0</b></div>
-        <div class="bg-white rounded-2xl p-4 shadow border"><p class="text-xs text-gray-500">In Stock</p><b id="statStock" class="text-3xl text-green-600">0</b></div>
-        <div class="bg-white rounded-2xl p-4 shadow border"><p class="text-xs text-gray-500">Low Stock</p><b id="statLow" class="text-3xl text-yellow-600">0</b></div>
-        <div class="bg-white rounded-2xl p-4 shadow border"><p class="text-xs text-gray-500">Out of Stock</p><b id="statOut" class="text-3xl text-red-600">0</b></div>
-      </section>
+      <div class="topbar-right">
+        <button class="topbar-btn btn-outline" onclick="showSection('addProduct')"><i class="fas fa-plus"></i> Add Product</button>
+        <button class="topbar-btn btn-red" onclick="seedDemo()"><i class="fas fa-rotate"></i> Load 120</button>
+        <button class="topbar-btn btn-outline" onclick="exportProducts()"><i class="fas fa-download"></i> Export</button>
+      </div>
+    </div>
 
-      <section class="grid lg:grid-cols-3 gap-4">
-        <div class="bg-white rounded-2xl p-5 shadow border lg:col-span-1">
-          <h2 id="formTitle" class="font-black text-lg mb-4">Add Product</h2>
-          <input type="hidden" id="editId">
-          <label class="text-xs font-bold">Product Name</label>
-          <input id="pname" class="border rounded-xl p-3 w-full mb-3" placeholder="Canon IR 2525 Machine">
-          <label class="text-xs font-bold">Category</label>
-          <select id="pcat" class="border rounded-xl p-3 w-full mb-3"><option>Canon Machines</option><option>Spare Parts</option><option>Toner & Drum</option><option>Fuser Parts</option><option>Accessories</option></select>
-          <div class="grid grid-cols-2 gap-3">
-            <div><label class="text-xs font-bold">MRP / Old Price</label><input id="pmrp" type="number" class="border rounded-xl p-3 w-full mb-3" placeholder="65000"></div>
-            <div><label class="text-xs font-bold">Selling Price</label><input id="pprice" type="number" class="border rounded-xl p-3 w-full mb-3" placeholder="55000"></div>
+    <!-- Content -->
+    <div class="content">
+
+      <!-- ===== DASHBOARD ===== -->
+      <div class="section active" id="sec-dashboard">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon red"><i class="fas fa-boxes-stacked"></i></div>
+            <div><div class="stat-val" id="statTotal">0</div><div class="stat-lbl">Total Products</div></div>
           </div>
-          <div class="grid grid-cols-2 gap-3">
-            <div><label class="text-xs font-bold">Discount %</label><input id="pdiscount" type="number" class="border rounded-xl p-3 w-full mb-3" placeholder="10"></div>
-            <div><label class="text-xs font-bold">Stock Qty</label><input id="pqty" type="number" class="border rounded-xl p-3 w-full mb-3" placeholder="5"></div>
+          <div class="stat-card">
+            <div class="stat-icon green"><i class="fas fa-check-circle"></i></div>
+            <div><div class="stat-val" id="statStock">0</div><div class="stat-lbl">In Stock</div></div>
           </div>
-          <label class="text-xs font-bold">Stock Status</label>
-          <select id="pstock" class="border rounded-xl p-3 w-full mb-3"><option>In Stock</option><option>Limited</option><option>Low Stock</option><option>Out of Stock</option></select>
-          <label class="text-xs font-bold">Product Details</label>
-          <textarea id="pdetails" class="border rounded-xl p-3 w-full mb-3 h-24" placeholder="Condition, warranty, service details..."></textarea>
-          <label class="text-xs font-bold">Product Image Upload</label>
-          <input id="pimageFile" type="file" accept="image/*" class="border rounded-xl p-3 w-full mb-1" onchange="previewImage(event)">
-          <p class="text-xs text-green-700 font-semibold mb-2" id="imgSizeInfo">Image upload করুন (auto compress হবে, max 400px)</p>
-          <input id="pimage" class="border rounded-xl p-3 w-full mb-3 text-xs" placeholder="Image URL (optional) — অথবা উপরে file upload করুন">
-          <img id="imgPreview" src="tech-cnd-placeholder.svg" class="w-full h-40 object-contain bg-gray-50 rounded-xl border mb-3 p-2">
-          <div class="grid grid-cols-2 gap-3">
-            <button onclick="saveProduct()" class="bg-red-600 hover:bg-red-700 text-white rounded-xl p-3 w-full font-bold"><i class="fa-solid fa-floppy-disk"></i> Save</button>
-            <button onclick="resetForm()" class="bg-slate-900 text-white rounded-xl p-3 w-full font-bold">Reset</button>
+          <div class="stat-card">
+            <div class="stat-icon yellow"><i class="fas fa-triangle-exclamation"></i></div>
+            <div><div class="stat-val" id="statLow">0</div><div class="stat-lbl">Low / Limited</div></div>
           </div>
-          <p class="text-xs text-gray-500 mt-3">এই admin data Google Sheet backend এ save/load হবে। Image upload base64 হিসেবে save হয়।</p>
+          <div class="stat-card">
+            <div class="stat-icon blue"><i class="fas fa-truck"></i></div>
+            <div><div class="stat-val" id="statOrders">0</div><div class="stat-lbl">Total Orders</div></div>
+          </div>
         </div>
-
-        <div class="bg-white rounded-2xl p-5 shadow border lg:col-span-2">
-          <div class="flex flex-wrap gap-3 justify-between items-center mb-4">
-            <h2 class="font-black text-lg">Product List <span class="text-xs text-gray-500 font-semibold">(120 default products editable)</span></h2>
-            <div class="flex gap-2"><input id="searchAdmin" oninput="render()" class="border rounded-xl p-2" placeholder="Search product"><button onclick="exportProducts()" class="bg-green-600 text-white rounded-xl px-3 font-bold">Export</button><button onclick="clearProducts()" class="text-red-600 font-bold text-sm">Clear</button></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+          <div class="card">
+            <div class="card-header"><span class="card-title">Recent Orders</span></div>
+            <div class="card-body" id="dashOrders" style="max-height:280px;overflow-y:auto;"></div>
           </div>
-          <div id="list" class="grid md:grid-cols-2 gap-3"></div>
+          <div class="card">
+            <div class="card-header"><span class="card-title">Quick Actions</span></div>
+            <div class="card-body" style="display:flex;flex-direction:column;gap:10px;">
+              <button class="topbar-btn btn-red" style="justify-content:flex-start;" onclick="showSection('addProduct')"><i class="fas fa-plus-circle"></i> নতুন Product Add</button>
+              <button class="topbar-btn btn-dark" style="justify-content:flex-start;" onclick="showSection('orderUpdate')"><i class="fas fa-truck-fast"></i> Order Status Update</button>
+              <button class="topbar-btn btn-green" style="justify-content:flex-start;" onclick="showSection('orderList')"><i class="fas fa-list-check"></i> সব Orders দেখুন</button>
+              <button class="topbar-btn btn-outline" style="justify-content:flex-start;" onclick="exportProducts()"><i class="fas fa-download"></i> Products Export (JSON)</button>
+              <button class="topbar-btn btn-outline" style="justify-content:flex-start;" onclick="seedDemo()"><i class="fas fa-rotate"></i> 120 Default Products Load</button>
+              <hr class="divider" style="margin:4px 0;">
+              <div style="font-size:12px;color:var(--muted);font-weight:600;"><i class="fas fa-phone" style="color:var(--red);"></i> +91 9735474770 &nbsp;|&nbsp; <i class="fab fa-whatsapp" style="color:#16a34a;"></i> WhatsApp</div>
+            </div>
+          </div>
         </div>
-      </section>
-
       </div>
 
-      <div id="ordersTab" class="hidden">
-      <section class="grid lg:grid-cols-3 gap-4 mt-4">
-        <div id="orderSection" class="bg-white rounded-2xl p-5 shadow border lg:col-span-1 ring-2 ring-blue-100">
-          <h2 class="font-black text-lg mb-1">Order Tracking Update</h2>
-          <p class="text-xs text-blue-700 font-bold mb-4">এখান থেকে Order Received / Shipped / Delivered, tracking link এবং delivery boy no add করবেন।</p>
-          <label class="text-xs font-bold">Order ID</label>
-          <input id="orderId" class="border rounded-xl p-3 w-full mb-3" placeholder="CND123456">
-          <label class="text-xs font-bold">Customer Name</label>
-          <input id="orderCustomer" class="border rounded-xl p-3 w-full mb-3" placeholder="Customer name">
-          <label class="text-xs font-bold">Customer Phone</label>
-          <input id="orderPhone" class="border rounded-xl p-3 w-full mb-3" placeholder="Mobile number">
-          <label class="text-xs font-bold">Order Status</label>
-          <select id="orderStatus" class="border rounded-xl p-3 w-full mb-3">
-            <option>Order Received</option><option>Packed</option><option>Shipped</option><option>Out for Delivery</option><option>Delivered</option><option>Cancelled</option>
+      <!-- ===== ADD / EDIT PRODUCT ===== -->
+      <div class="section" id="sec-addProduct">
+        <div class="two-col">
+          <!-- Form -->
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title" id="formTitle">Add New Product</span>
+              <button class="action-btn sm" onclick="resetForm()">Reset</button>
+            </div>
+            <div class="card-body">
+              <input type="hidden" id="editId">
+              <div class="form-group">
+                <label class="form-label">Product Name *</label>
+                <input id="pname" class="form-control" placeholder="Canon IR 2525 Machine">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Category</label>
+                <select id="pcat" class="form-control">
+                  <option>Canon Machines</option><option>Spare Parts</option>
+                  <option>Toner & Drum</option><option>Fuser Parts</option><option>Accessories</option>
+                </select>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">MRP / Old Price</label>
+                  <input id="pmrp" type="number" class="form-control" placeholder="65000">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Selling Price</label>
+                  <input id="pprice" type="number" class="form-control" placeholder="55000">
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Discount %</label>
+                  <input id="pdiscount" type="number" class="form-control" placeholder="10">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Stock Qty</label>
+                  <input id="pqty" type="number" class="form-control" placeholder="5">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Stock Status</label>
+                <select id="pstock" class="form-control">
+                  <option>In Stock</option><option>Limited</option><option>Low Stock</option><option>Out of Stock</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Product Details</label>
+                <textarea id="pdetails" class="form-control" placeholder="Condition, warranty, parts info..."></textarea>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Photo Upload</label>
+                <div class="img-upload-area" onclick="document.getElementById('pimageFile').click()">
+                  <input id="pimageFile" type="file" accept="image/*" style="display:none" onchange="previewImage(event)">
+                  <i class="fas fa-camera" style="font-size:22px;color:var(--muted);"></i>
+                  <p style="font-size:11px;color:var(--muted);margin-top:6px;">ছবি চুন করুন বা এখানে ড্র্যাগ করুন</p>
+                  <p id="imgSizeInfo" style="font-size:10px;color:var(--green);margin-top:3px;">Auto compress • Max 400px</p>
+                </div>
+                <input id="pimage" class="form-control" placeholder="বা Image URL এখানে paste করুন" style="margin-top:8px;">
+                <img id="imgPreview" src="tech-cnd-placeholder.svg" class="img-preview" onerror="this.src='tech-cnd-placeholder.svg'">
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px;">
+                <button onclick="saveProduct()" class="topbar-btn btn-red" style="justify-content:center;padding:11px;"><i class="fas fa-floppy-disk"></i> Save Product</button>
+                <button onclick="resetForm()" class="topbar-btn btn-dark" style="justify-content:center;padding:11px;"><i class="fas fa-rotate-left"></i> Reset</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mini product list preview -->
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">Recent Products</span>
+              <button class="action-btn sm" onclick="showSection('productList')">সব দেখুন →</button>
+            </div>
+            <div class="card-body" style="max-height:680px;overflow-y:auto;">
+              <div id="formMiniList" class="product-grid" style="grid-template-columns:repeat(auto-fill,minmax(200px,1fr));"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== PRODUCT LIST ===== -->
+      <div class="section" id="sec-productList">
+        <div class="toolbar">
+          <input id="searchAdmin" class="search-box" oninput="renderList()" placeholder="Product search করুন...">
+          <button class="topbar-btn btn-green" onclick="exportProducts()"><i class="fas fa-download"></i> Export</button>
+          <button class="topbar-btn btn-outline" style="color:var(--red);border-color:var(--red);" onclick="clearProducts()"><i class="fas fa-trash"></i> Clear All</button>
+        </div>
+        <div class="cat-pills" id="catPills"></div>
+        <div id="productListGrid" class="product-grid"></div>
+      </div>
+
+      <!-- ===== CATEGORIES ===== -->
+      <div class="section" id="sec-categories">
+        <div class="stats-grid">
+          <div class="stat-card" id="catStat0"></div>
+          <div class="stat-card" id="catStat1"></div>
+          <div class="stat-card" id="catStat2"></div>
+          <div class="stat-card" id="catStat3"></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">Category Breakdown</span></div>
+          <div class="card-body" id="catBreakdown"></div>
+        </div>
+      </div>
+
+      <!-- ===== ORDER LIST ===== -->
+      <div class="section" id="sec-orderList">
+        <div class="toolbar">
+          <input id="searchOrder" class="search-box" oninput="renderOrders()" placeholder="Order ID / phone / name search...">
+          <select id="orderStatusFilter" onchange="renderOrders()" class="form-control" style="width:auto;min-width:160px;">
+            <option value="">All Status</option>
+            <option>Order Received</option><option>Packed</option><option>Shipped</option>
+            <option>Out for Delivery</option><option>Delivered</option><option>Cancelled</option>
           </select>
-          <label class="text-xs font-bold">Payment Status</label>
-          <select id="paymentStatus" class="border rounded-xl p-3 w-full mb-3"><option>Payment Pending</option><option>Paid</option><option>Failed</option><option>Refunded</option></select>
-          <label class="text-xs font-bold">Order Amount</label>
-          <input id="orderAmount" type="number" class="border rounded-xl p-3 w-full mb-3" placeholder="Total amount">
-          <label class="text-xs font-bold">Tracking Link</label>
-          <input id="trackingLink" class="border rounded-xl p-3 w-full mb-3" placeholder="Courier / Google Map tracking link">
-          <label class="text-xs font-bold">Delivery Boy Name</label>
-          <input id="deliveryName" class="border rounded-xl p-3 w-full mb-3" placeholder="Delivery boy name">
-          <label class="text-xs font-bold">Delivery Boy Mobile No</label>
-          <input id="deliveryPhone" class="border rounded-xl p-3 w-full mb-3" placeholder="Delivery boy number">
-          <label class="text-xs font-bold">Order Note</label>
-          <textarea id="orderNote" class="border rounded-xl p-3 w-full mb-3 h-20" placeholder="Shipping note, payment, delivery details..."></textarea>
-          <div class="grid grid-cols-2 gap-3">
-            <button onclick="saveOrder()" class="bg-blue-700 hover:bg-blue-800 text-white rounded-xl p-3 w-full font-bold">Save Order</button>
-            <button onclick="resetOrderForm()" class="bg-slate-900 text-white rounded-xl p-3 w-full font-bold">Reset</button>
-          </div>
-          <p class="text-xs text-gray-500 mt-3">Customer website-এর Track Order box-এ Order ID দিলে payment QR, payment status, tracking link এবং delivery boy number দেখাবে।</p>
         </div>
-        <div class="bg-white rounded-2xl p-5 shadow border lg:col-span-2">
-          <div class="flex flex-wrap gap-3 justify-between items-center mb-4">
-            <h2 class="font-black text-lg">Orders List</h2>
-            <input id="searchOrder" oninput="renderOrders()" class="border rounded-xl p-2" placeholder="Search Order ID / phone / status">
-          </div>
-          <div id="ordersList" class="grid md:grid-cols-2 gap-3"></div>
-        </div>
-      </section>
-
+        <div id="orderListContainer"></div>
       </div>
 
-      <section class="bg-white rounded-2xl p-5 shadow border mt-4">
-        <h2 class="font-black text-lg mb-3">Order / Stock Notes</h2>
-        <textarea id="notes" class="border rounded-xl p-3 w-full h-28" placeholder="Order/customer/stock notes..."></textarea>
-        <button onclick="saveNotes()" class="mt-3 bg-slate-900 text-white rounded-xl p-3 font-bold">Save Notes</button>
-      </section>
-    </main>
-  </div>
+      <!-- ===== UPDATE ORDER ===== -->
+      <div class="section" id="sec-orderUpdate">
+        <div class="two-col">
+          <div class="card">
+            <div class="card-header"><span class="card-title">Order Status Update</span></div>
+            <div class="card-body">
+              <div class="info-banner"><i class="fas fa-info-circle"></i> Order ID দিয়ে status, tracking এবং delivery boy update করুন।</div>
+              <div class="form-group">
+                <label class="form-label">Order ID *</label>
+                <input id="orderId" class="form-control" placeholder="CND123456">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Customer Name</label>
+                <input id="orderCustomer" class="form-control" placeholder="Customer name">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Customer Phone</label>
+                <input id="orderPhone" class="form-control" placeholder="Mobile number">
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Order Status</label>
+                  <select id="orderStatus" class="form-control">
+                    <option>Order Received</option><option>Packed</option><option>Shipped</option>
+                    <option>Out for Delivery</option><option>Delivered</option><option>Cancelled</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Payment Status</label>
+                  <select id="paymentStatus" class="form-control">
+                    <option>Payment Pending</option><option>Paid</option><option>Failed</option><option>Refunded</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Order Amount (₹)</label>
+                <input id="orderAmount" type="number" class="form-control" placeholder="Total amount">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Tracking Link</label>
+                <input id="trackingLink" class="form-control" placeholder="Courier tracking URL">
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Delivery Boy Name</label>
+                  <input id="deliveryName" class="form-control" placeholder="Name">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Delivery Boy Phone</label>
+                  <input id="deliveryPhone" class="form-control" placeholder="Mobile">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Order Note</label>
+                <textarea id="orderNote" class="form-control" placeholder="Shipping note, payment details..."></textarea>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                <button onclick="saveOrder()" class="topbar-btn btn-red" style="justify-content:center;padding:11px;"><i class="fas fa-floppy-disk"></i> Save Order</button>
+                <button onclick="resetOrderForm()" class="topbar-btn btn-dark" style="justify-content:center;padding:11px;"><i class="fas fa-rotate-left"></i> Reset</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header"><span class="card-title">Recent Orders</span></div>
+            <div class="card-body" style="max-height:640px;overflow-y:auto;">
+              <div id="orderUpdateMiniList"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== NOTES ===== -->
+      <div class="section" id="sec-notes">
+        <div class="card" style="max-width:680px;">
+          <div class="card-header"><span class="card-title">Admin Notes</span></div>
+          <div class="card-body">
+            <textarea id="adminNotes" class="form-control" style="height:260px;" placeholder="Order/customer/stock notes..."></textarea>
+            <button onclick="saveNotes()" class="topbar-btn btn-dark" style="margin-top:12px;"><i class="fas fa-save"></i> Save Notes</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== SETTINGS ===== -->
+      <div class="section" id="sec-settings">
+        <div class="two-col" style="grid-template-columns:1fr 1fr;">
+          <div class="card">
+            <div class="card-header"><span class="card-title">Store Settings</span></div>
+            <div class="card-body" style="display:flex;flex-direction:column;gap:12px;">
+              <div class="warn-banner"><i class="fas fa-triangle-exclamation"></i> UPI ID সঠিক না হলে payment QR কাজ করবে না।</div>
+              <div class="form-group"><label class="form-label">UPI ID</label><input class="form-control" placeholder="yourname@upi" value="techcndcopier@upi"></div>
+              <div class="form-group"><label class="form-label">WhatsApp Number</label><input class="form-control" placeholder="919735474770" value="919735474770"></div>
+              <div class="form-group"><label class="form-label">Google Sheet API URL</label><input class="form-control" placeholder="Apps Script URL" value="https://script.google.com/macros/s/..."></div>
+              <div class="info-banner">Settings save করতে index.html এবং admin.html file এ manually update করতে হবে।</div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><span class="card-title">Data Management</span></div>
+            <div class="card-body" style="display:flex;flex-direction:column;gap:10px;">
+              <button class="topbar-btn btn-red" style="justify-content:flex-start;" onclick="seedDemo()"><i class="fas fa-rotate"></i> Load 120 Default Products</button>
+              <button class="topbar-btn btn-green" style="justify-content:flex-start;" onclick="exportProducts()"><i class="fas fa-download"></i> Products JSON Export</button>
+              <button class="topbar-btn btn-outline" style="justify-content:flex-start;color:var(--red);border-color:var(--red);" onclick="clearProducts()"><i class="fas fa-trash"></i> All Products Clear</button>
+              <hr class="divider">
+              <button class="topbar-btn btn-outline" style="justify-content:flex-start;" onclick="logout()"><i class="fas fa-right-from-bracket"></i> Logout</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+</div><!-- /panel -->
 
 <script>
+// ===== CONFIG =====
+const ADMIN_PIN = '1234';
+const STORAGE_KEY = 'techCndProducts';
+const ORDER_KEY = 'techCndOrders';
+const PLACEHOLDER = 'tech-cnd-placeholder.svg';
+const categories = ['Canon Machines','Spare Parts','Toner & Drum','Fuser Parts','Accessories'];
+const CAT_ICONS = {'Canon Machines':'fa-print','Spare Parts':'fa-gears','Toner & Drum':'fa-fill-drip','Fuser Parts':'fa-wrench','Accessories':'fa-plug'};
+const CAT_COLORS = {'Canon Machines':'red','Spare Parts':'blue','Toner & Drum':'green','Fuser Parts':'yellow','Accessories':'blue'};
+const API_URL = "https://script.google.com/macros/s/AKfycbxSdAqsOtxQdHlcb_zyO91HWdb8fl2HQ3Go7NXCh_0R0wCGoofGGYuz20FtACzfDtVW/exec";
 
-function showTab(tab){
-  const products=document.getElementById('productsTab');
-  const orders=document.getElementById('ordersTab');
-  const pBtns=[document.getElementById('productTabBtn'),document.getElementById('productTabBtn2')];
-  const oBtns=[document.getElementById('orderTabBtn'),document.getElementById('orderTabBtn2')];
-  if(tab==='orders'){
-    products.classList.add('hidden'); orders.classList.remove('hidden'); renderOrders();
-    pBtns.forEach(b=>{if(b){b.className=b.id.endsWith('2')?'flex-1 bg-slate-100 text-slate-900 rounded-xl py-3 font-black':'bg-white/10 px-5 py-2 rounded-lg font-bold'}});
-    oBtns.forEach(b=>{if(b){b.className=b.id.endsWith('2')?'flex-1 bg-blue-700 text-white rounded-xl py-3 font-black':'bg-blue-700 px-5 py-2 rounded-lg font-bold'}});
-  }else{
-    orders.classList.add('hidden'); products.classList.remove('hidden'); render();
-    pBtns.forEach(b=>{if(b){b.className=b.id.endsWith('2')?'flex-1 bg-red-600 text-white rounded-xl py-3 font-black':'bg-red-600 px-5 py-2 rounded-lg font-bold'}});
-    oBtns.forEach(b=>{if(b){b.className=b.id.endsWith('2')?'flex-1 bg-slate-100 text-slate-900 rounded-xl py-3 font-black':'bg-white/10 px-5 py-2 rounded-lg font-bold'}});
+let sidebarCollapsed = false;
+let currentCatFilter = 'All';
+
+// ===== UI =====
+function toggleSidebar() {
+  sidebarCollapsed = !sidebarCollapsed;
+  document.getElementById('sidebar').classList.toggle('collapsed', sidebarCollapsed);
+  document.getElementById('mainContent').classList.toggle('expanded', sidebarCollapsed);
+}
+
+function showSection(name) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const sec = document.getElementById('sec-' + name);
+  if (sec) sec.classList.add('active');
+  // Highlight nav
+  document.querySelectorAll('.nav-item').forEach(btn => {
+    if (btn.getAttribute('onclick') && btn.getAttribute('onclick').includes("'"+name+"'")) btn.classList.add('active');
+  });
+  // Update topbar
+  const titles = {
+    dashboard: ['Dashboard', 'Overview & Quick Actions'],
+    addProduct: ['Add / Edit Product', 'New product যোগ করুন'],
+    productList: ['Product List', 'সব products manage করুন'],
+    categories: ['Categories', 'Category breakdown'],
+    orderList: ['All Orders', 'সব orders দেখুন'],
+    orderUpdate: ['Update Order', 'Order status, tracking, delivery update'],
+    notes: ['Admin Notes', 'Stock / order notes'],
+    settings: ['Settings', 'Store configuration']
+  };
+  if (titles[name]) {
+    document.getElementById('topbarTitle').textContent = titles[name][0];
+    document.getElementById('topbarSub').textContent = titles[name][1];
+  }
+  // Refresh data
+  if (name === 'dashboard') { updateStats(); renderDashOrders(); }
+  if (name === 'addProduct') { renderFormMiniList(); }
+  if (name === 'productList') { initCatPills(); renderList(); }
+  if (name === 'categories') { renderCategories(); }
+  if (name === 'orderList') { renderOrders(); }
+  if (name === 'orderUpdate') { renderOrderMiniList(); }
+}
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+// ===== AUTH =====
+function login() {
+  if (document.getElementById('pin').value === ADMIN_PIN) {
+    localStorage.setItem('techCndAdmin','yes');
+    showPanel();
+  } else { alert('Wrong PIN'); }
+}
+function logout() { localStorage.removeItem('techCndAdmin'); location.reload(); }
+function showPanel() {
+  document.getElementById('loginBox').style.display = 'none';
+  document.getElementById('panel').style.display = 'block';
+  document.getElementById('adminNotes').value = localStorage.getItem('techCndNotes') || '';
+  if (!getProducts().length) seedDemo(true);
+  updateStats(); renderDashOrders(); renderOrderMiniList();
+  loadProductsFromSheet(); loadOrdersFromSheet();
+}
+
+// ===== PRODUCTS =====
+function getProducts() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch(e) { return []; } }
+function setProducts(p) { localStorage.setItem(STORAGE_KEY, JSON.stringify(p)); updateStats(); }
+function getOrders() { try { return JSON.parse(localStorage.getItem(ORDER_KEY) || '[]'); } catch(e) { return []; } }
+function setOrders(o) { localStorage.setItem(ORDER_KEY, JSON.stringify(o)); updateStats(); }
+
+function updateStats() {
+  const p = getProducts(), o = getOrders();
+  document.getElementById('statTotal').textContent = p.length;
+  document.getElementById('statStock').textContent = p.filter(x => x.stock === 'In Stock').length;
+  document.getElementById('statLow').textContent = p.filter(x => x.stock === 'Low Stock' || x.stock === 'Limited').length;
+  document.getElementById('statOrders').textContent = o.length;
+  const navP = document.getElementById('navProdCount');
+  const navO = document.getElementById('navOrderCount');
+  if(navP) navP.textContent = p.length;
+  if(navO) navO.textContent = o.length;
+}
+
+function stockBadge(s) {
+  if(s === 'In Stock') return `<span class="badge badge-green">${s}</span>`;
+  if(s === 'Out of Stock') return `<span class="badge badge-red">${s}</span>`;
+  return `<span class="badge badge-yellow">${s}</span>`;
+}
+
+function renderProductCard(x) {
+  return `<div class="product-card">
+    <img src="${x.image||PLACEHOLDER}" onerror="this.src='${PLACEHOLDER}'" class="product-card-img">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:4px;">
+      <div>
+        <div class="product-card-cat">${x.category} • #${x.id}</div>
+        <div class="product-card-name">${x.name}</div>
+      </div>
+      ${stockBadge(x.stock||'In Stock')}
+    </div>
+    <div style="display:flex;align-items:center;gap:6px;">
+      <span class="product-card-price">₹${Number(x.price||0).toLocaleString('en-IN')}</span>
+      ${x.discount ? `<span class="badge badge-green">${x.discount}% OFF</span>` : ''}
+    </div>
+    <div style="font-size:11px;color:var(--muted);">Qty: ${x.qty||0} ${x.mrp&&x.mrp>x.price?`• MRP ₹${Number(x.mrp).toLocaleString('en-IN')}`:''}  </div>
+    <div class="product-card-actions">
+      <button class="action-btn edit" onclick="editProduct('${x.id}')"><i class="fas fa-pencil"></i> Edit</button>
+      <button class="action-btn del" onclick="delProduct('${x.id}')"><i class="fas fa-trash"></i></button>
+      <button class="action-btn sm" onclick="changeStock('${x.id}','In Stock')">In</button>
+      <button class="action-btn sm" onclick="changeStock('${x.id}','Low Stock')">Low</button>
+      <button class="action-btn sm" onclick="changeStock('${x.id}','Out of Stock')">Out</button>
+    </div>
+  </div>`;
+}
+
+function renderList() {
+  const q = (document.getElementById('searchAdmin')?.value || '').toLowerCase();
+  let arr = getProducts().filter(x =>
+    (currentCatFilter === 'All' || x.category === currentCatFilter) &&
+    ((x.name||'')+(x.category||'')+String(x.id)).toLowerCase().includes(q)
+  );
+  const grid = document.getElementById('productListGrid');
+  if (grid) grid.innerHTML = arr.length ? arr.map(renderProductCard).join('') : '<p style="color:var(--muted);padding:20px;">কোনো product নেই। Load 120 চাপুন।</p>';
+}
+
+function renderFormMiniList() {
+  const arr = getProducts().slice(0, 20);
+  const el = document.getElementById('formMiniList');
+  if (el) el.innerHTML = arr.length ? arr.map(renderProductCard).join('') : '<p style="color:var(--muted);">কোনো product নেই।</p>';
+}
+
+function initCatPills() {
+  const el = document.getElementById('catPills');
+  if (!el) return;
+  const all = ['All', ...categories];
+  el.innerHTML = all.map(c => `<button class="cat-pill${currentCatFilter===c?' active':''}" onclick="setCat('${c}')">${c}</button>`).join('');
+}
+function setCat(c) { currentCatFilter = c; initCatPills(); renderList(); }
+
+function renderCategories() {
+  const arr = getProducts();
+  const icons = ['red','blue','green','yellow'];
+  categories.forEach((c, i) => {
+    const count = arr.filter(x => x.category === c).length;
+    const el = document.getElementById('catStat' + i);
+    if (el) el.innerHTML = `<div class="stat-icon ${icons[i%4]}"><i class="fas ${CAT_ICONS[c]||'fa-tag'}"></i></div><div><div class="stat-val">${count}</div><div class="stat-lbl">${c}</div></div>`;
+  });
+  const bd = document.getElementById('catBreakdown');
+  if (bd) bd.innerHTML = categories.map(c => {
+    const items = arr.filter(x => x.category === c);
+    const inStock = items.filter(x => x.stock === 'In Stock').length;
+    const pct = items.length ? Math.round(items.length / arr.length * 100) : 0;
+    return `<div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);">
+      <i class="fas ${CAT_ICONS[c]||'fa-tag'}" style="width:20px;color:var(--red);"></i>
+      <div style="flex:1;">
+        <div style="font-size:13px;font-weight:700;">${c}</div>
+        <div style="background:var(--border);border-radius:4px;height:6px;margin-top:6px;overflow:hidden;">
+          <div style="height:6px;background:var(--red);width:${pct}%;border-radius:4px;"></div>
+        </div>
+      </div>
+      <div style="text-align:right;font-size:12px;">
+        <div style="font-weight:800;">${items.length} products</div>
+        <div style="color:var(--green);font-size:11px;">${inStock} in stock</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ===== PRODUCT FORM =====
+document.getElementById('pdiscount')?.addEventListener('input', calcPrice);
+document.getElementById('pmrp')?.addEventListener('input', calcPrice);
+function calcPrice() {
+  const mrp = Number(document.getElementById('pmrp').value||0);
+  const dis = Number(document.getElementById('pdiscount').value||0);
+  if (!document.getElementById('pprice').value && mrp && dis) {
+    document.getElementById('pprice').value = Math.round(mrp - mrp*dis/100);
+  }
+}
+function previewImage(e) {
+  const file = e.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    const img = new Image();
+    img.onload = function() {
+      const canvas = document.createElement('canvas');
+      let w = img.width, h = img.height, MAX = 400, Q = 0.7;
+      if(w>MAX||h>MAX){ if(w>h){h=Math.round(h*MAX/w);w=MAX;}else{w=Math.round(w*MAX/h);h=MAX;} }
+      canvas.width=w; canvas.height=h;
+      canvas.getContext('2d').drawImage(img,0,0,w,h);
+      const compressed = canvas.toDataURL('image/jpeg', Q);
+      document.getElementById('pimage').value = compressed;
+      document.getElementById('imgPreview').src = compressed;
+      document.getElementById('imgSizeInfo').textContent = 'Size: '+Math.round(compressed.length*3/4/1024)+' KB (compressed)';
+    };
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+async function saveProduct() {
+  if (!document.getElementById('pname').value.trim()) { alert('Product name দিন'); return; }
+  const id = document.getElementById('editId').value || 'P'+Date.now();
+  const item = {
+    id, name: document.getElementById('pname').value.trim(),
+    category: document.getElementById('pcat').value,
+    mrp: Number(document.getElementById('pmrp').value||document.getElementById('pprice').value||0),
+    price: Number(document.getElementById('pprice').value||0),
+    discount: Number(document.getElementById('pdiscount').value||0),
+    qty: Number(document.getElementById('pqty').value||0),
+    stock: document.getElementById('pstock').value,
+    details: document.getElementById('pdetails').value.trim(),
+    image: document.getElementById('pimage').value || PLACEHOLDER
+  };
+  let arr = getProducts();
+  const idx = arr.findIndex(x => String(x.id) === String(id));
+  idx >= 0 ? arr[idx] = item : arr.unshift(item);
+  setProducts(arr); resetForm(); toast('✅ Product saved!');
+  renderFormMiniList();
+  try { await apiPost({action:'saveProduct', product: item}); } catch(e) {}
+}
+function editProduct(id) {
+  const x = getProducts().find(p => String(p.id) === String(id));
+  if (!x) return;
+  showSection('addProduct');
+  document.getElementById('editId').value = x.id;
+  document.getElementById('formTitle').textContent = 'Edit Product #' + x.id;
+  document.getElementById('pname').value = x.name;
+  document.getElementById('pcat').value = x.category;
+  document.getElementById('pmrp').value = x.mrp||'';
+  document.getElementById('pprice').value = x.price||'';
+  document.getElementById('pdiscount').value = x.discount||'';
+  document.getElementById('pqty').value = x.qty||0;
+  document.getElementById('pstock').value = x.stock||'In Stock';
+  document.getElementById('pdetails').value = x.details||'';
+  document.getElementById('pimage').value = x.image||'';
+  document.getElementById('imgPreview').src = x.image||PLACEHOLDER;
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+function resetForm() {
+  document.getElementById('editId').value = '';
+  document.getElementById('formTitle').textContent = 'Add New Product';
+  ['pname','pmrp','pprice','pdiscount','pqty','pdetails','pimage'].forEach(id => document.getElementById(id).value='');
+  document.getElementById('pcat').value = 'Canon Machines';
+  document.getElementById('pstock').value = 'In Stock';
+  document.getElementById('pimageFile').value = '';
+  document.getElementById('imgPreview').src = PLACEHOLDER;
+  document.getElementById('imgSizeInfo').textContent = 'Auto compress • Max 400px';
+}
+async function delProduct(id) {
+  if (!confirm('Delete this product?')) return;
+  setProducts(getProducts().filter(p => String(p.id) !== String(id)));
+  renderList(); renderFormMiniList(); toast('Product deleted');
+  try { await apiPost({action:'deleteProduct', id}); } catch(e) {}
+}
+async function changeStock(id, status) {
+  let arr = getProducts();
+  const x = arr.find(p => String(p.id) === String(id));
+  if (x) { x.stock = status; if(status==='Out of Stock') x.qty=0; setProducts(arr); renderList(); renderFormMiniList(); toast('Stock updated'); }
+  try { await apiPost({action:'saveProduct', product: x}); } catch(e) {}
+}
+function clearProducts() { if(confirm('সব products delete হবে?')) { setProducts([]); renderList(); renderFormMiniList(); } }
+function exportProducts() {
+  const blob = new Blob([JSON.stringify(getProducts(), null, 2)], {type:'application/json'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download='tech-cnd-products.json'; a.click();
+}
+
+// ===== ORDER RENDERING =====
+function orderStatusBadge(s) {
+  const cls = s==='Delivered'?'badge-green':s==='Shipped'||s==='Out for Delivery'?'badge badge-green':s==='Cancelled'?'badge-red':'badge-yellow';
+  return `<span class="badge ${cls}">${s}</span>`;
+}
+function renderDashOrders() {
+  const arr = getOrders().slice(0, 8);
+  const el = document.getElementById('dashOrders');
+  if (!el) return;
+  el.innerHTML = arr.length ? arr.map(o => `
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);">
+      <div>
+        <div style="font-size:13px;font-weight:800;">${o.id}</div>
+        <div style="font-size:11px;color:var(--muted);">${o.customer||'-'} • ${o.phone||''}</div>
+      </div>
+      <div style="text-align:right;">
+        ${orderStatusBadge(o.status||'Order Received')}
+        <div style="font-size:11px;color:var(--muted);margin-top:2px;">${o.amount?'₹'+Number(o.amount).toLocaleString('en-IN'):''}</div>
+      </div>
+    </div>`).join('') : '<p style="color:var(--muted);font-size:12px;">এখনো কোনো order নেই।</p>';
+}
+function renderOrders() {
+  const q = (document.getElementById('searchOrder')?.value || '').toLowerCase();
+  const sf = document.getElementById('orderStatusFilter')?.value || '';
+  let arr = getOrders().filter(o =>
+    (o.id+o.customer+o.phone+(o.status||'')).toLowerCase().includes(q) &&
+    (!sf || o.status === sf)
+  );
+  const el = document.getElementById('orderListContainer');
+  if (!el) return;
+  el.innerHTML = arr.length ? arr.map(o => `
+    <div class="order-card">
+      <div class="order-row">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div class="order-id">${o.id}</div>
+          ${orderStatusBadge(o.status||'Order Received')}
+          <span class="badge ${o.paymentStatus==='Paid'?'badge-green':'badge-red'}">${o.paymentStatus||'Payment Pending'}</span>
+        </div>
+        <div style="font-size:13px;font-weight:800;">${o.amount?'₹'+Number(o.amount).toLocaleString('en-IN'):''}</div>
+      </div>
+      <div class="order-meta" style="margin-top:4px;">${o.customer||'—'} • ${o.phone||'—'}</div>
+      ${o.deliveryName?`<div class="order-meta"><i class="fas fa-motorcycle" style="color:var(--red);"></i> ${o.deliveryName} ${o.deliveryPhone?'• '+o.deliveryPhone:''}</div>`:''}
+      ${o.tracking?`<div class="order-meta" style="font-size:11px;color:var(--blue);"><i class="fas fa-location-dot"></i> <a href="${o.tracking}" target="_blank" style="color:var(--blue);">Tracking Link</a></div>`:''}
+      ${o.note?`<div class="order-meta" style="margin-top:4px;">${o.note}</div>`:''}
+      <div style="font-size:10px;color:var(--muted);margin-top:4px;">Updated: ${o.updated||'—'}</div>
+      <div style="display:flex;gap:8px;margin-top:10px;">
+        <button class="action-btn edit" onclick="loadOrderEdit('${o.id}')"><i class="fas fa-pencil"></i> Edit</button>
+        <button class="action-btn del" onclick="deleteOrder('${o.id}')"><i class="fas fa-trash"></i></button>
+      </div>
+    </div>`).join('') : '<p style="color:var(--muted);padding:20px 0;">কোনো order নেই।</p>';
+}
+function renderOrderMiniList() {
+  const arr = getOrders().slice(0, 12);
+  const el = document.getElementById('orderUpdateMiniList');
+  if (!el) return;
+  el.innerHTML = arr.length ? arr.map(o => `
+    <div style="padding:10px;border:1px solid var(--border);border-radius:10px;margin-bottom:10px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-weight:800;font-size:13px;">${o.id}</span>
+        ${orderStatusBadge(o.status||'Order Received')}
+      </div>
+      <div style="font-size:11px;color:var(--muted);margin-top:3px;">${o.customer||'—'} • ${o.amount?'₹'+Number(o.amount).toLocaleString('en-IN'):''}</div>
+      <button class="action-btn edit" style="margin-top:8px;" onclick="loadOrderEdit('${o.id}')"><i class="fas fa-pencil"></i> Edit</button>
+    </div>`).join('') : '<p style="color:var(--muted);font-size:12px;">কোনো order নেই।</p>';
+}
+function loadOrderEdit(id) {
+  const x = getOrders().find(o => String(o.id) === String(id));
+  if (!x) return;
+  document.getElementById('orderId').value = x.id;
+  document.getElementById('orderCustomer').value = x.customer||'';
+  document.getElementById('orderPhone').value = x.phone||'';
+  document.getElementById('orderStatus').value = x.status||'Order Received';
+  document.getElementById('paymentStatus').value = x.paymentStatus||'Payment Pending';
+  document.getElementById('orderAmount').value = x.amount||'';
+  document.getElementById('trackingLink').value = x.tracking||'';
+  document.getElementById('deliveryName').value = x.deliveryName||'';
+  document.getElementById('deliveryPhone').value = x.deliveryPhone||'';
+  document.getElementById('orderNote').value = x.note||'';
+  showSection('orderUpdate');
+}
+async function saveOrder() {
+  const id = (document.getElementById('orderId').value||'').trim().toUpperCase();
+  if (!id) { alert('Order ID দিন'); return; }
+  const item = {
+    id, customer: document.getElementById('orderCustomer').value.trim(),
+    phone: document.getElementById('orderPhone').value.trim(),
+    status: document.getElementById('orderStatus').value,
+    paymentStatus: document.getElementById('paymentStatus').value,
+    amount: Number(document.getElementById('orderAmount').value||0),
+    tracking: document.getElementById('trackingLink').value.trim(),
+    deliveryName: document.getElementById('deliveryName').value.trim(),
+    deliveryPhone: document.getElementById('deliveryPhone').value.trim(),
+    note: document.getElementById('orderNote').value.trim(),
+    updated: new Date().toLocaleString('en-IN')
+  };
+  let arr = getOrders();
+  const i = arr.findIndex(x => String(x.id).toUpperCase() === id);
+  i >= 0 ? arr[i] = item : arr.unshift(item);
+  setOrders(arr); resetOrderForm(); renderOrderMiniList(); renderDashOrders();
+  toast('✅ Order updated!');
+  try { await apiPost({action:'updateOrder', order: item}); } catch(e) {}
+}
+function resetOrderForm() {
+  ['orderId','orderCustomer','orderPhone','orderAmount','trackingLink','deliveryName','deliveryPhone','orderNote'].forEach(id => document.getElementById(id).value='');
+  document.getElementById('orderStatus').value = 'Order Received';
+  document.getElementById('paymentStatus').value = 'Payment Pending';
+}
+async function deleteOrder(id) {
+  if(confirm('Order delete করবেন?')) {
+    setOrders(getOrders().filter(o => String(o.id) !== String(id)));
+    renderOrders(); renderDashOrders(); renderOrderMiniList(); toast('Order deleted');
   }
 }
 
-const ADMIN_PIN='1234';
-const STORAGE_KEY='techCndProducts';
-const ORDER_KEY='techCndOrders';
-const PLACEHOLDER='tech-cnd-placeholder.svg';
-const categories=['Canon Machines','Spare Parts','Toner & Drum','Fuser Parts','Accessories'];
-const machineRealPhoto={
-  'Canon IR ADV C5235 Color Copier':'images/canon-c3322l.jpg',
-  'Canon IR ADV 4525 Machine':'images/canon-619i.jpg',
-  'Canon IR ADV 4235 Machine':'images/canon-619i.jpg'
-};
-const img={
-  'Canon Machines':PLACEHOLDER,
-  'Spare Parts':'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=500&auto=format&fit=crop',
-  'Toner & Drum':'https://images.unsplash.com/photo-1612815154858-60aa4c59eaa6?w=500&auto=format&fit=crop',
-  'Fuser Parts':'https://images.unsplash.com/photo-1537462715879-360eeb61a0bc?w=500&auto=format&fit=crop',
-  'Accessories':'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=500&auto=format&fit=crop'
-};
-function productImage(name,category,index){
+// ===== NOTES =====
+function saveNotes() { localStorage.setItem('techCndNotes', document.getElementById('adminNotes').value); toast('Notes saved!'); }
+
+// ===== DEFAULT PRODUCTS =====
+const machineRealPhoto = {'Canon IR ADV C5235 Color Copier':'images/canon-c3322l.jpg','Canon IR ADV 4525 Machine':'images/canon-619i.jpg','Canon IR ADV 4235 Machine':'images/canon-619i.jpg'};
+const img = {'Canon Machines':PLACEHOLDER,'Spare Parts':'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=500&auto=format&fit=crop','Toner & Drum':'https://images.unsplash.com/photo-1612815154858-60aa4c59eaa6?w=500&auto=format&fit=crop','Fuser Parts':'https://images.unsplash.com/photo-1537462715879-360eeb61a0bc?w=500&auto=format&fit=crop','Accessories':'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=500&auto=format&fit=crop'};
+function productImage(name, category) {
   if(category==='Canon Machines') return machineRealPhoto[name]||PLACEHOLDER;
   const n=(name||'').toLowerCase();
   if(n.includes('toner')||n.includes('drum')) return img['Toner & Drum'];
   if(n.includes('fuser')||n.includes('heater')||n.includes('fixing')) return img['Fuser Parts'];
   return img[category]||PLACEHOLDER;
 }
-function defaultProducts(){
-  const baseProducts=[
+function defaultProducts() {
+  const baseProducts = [
     ['Canon IR 2525 Photocopier Machine','Canon Machines',55000],['Canon IR 3225 Photocopier Machine','Canon Machines',68000],['Canon IR 2206N Copier Printer','Canon Machines',62000],['Canon IR 2006N Copier Printer','Canon Machines',52000],['Canon IR ADV 4525 Machine','Canon Machines',125000],['Canon IR ADV 4235 Machine','Canon Machines',115000],['Canon IR ADV C5235 Color Copier','Canon Machines',185000],['Canon IR 3300 Heavy Duty Copier','Canon Machines',48000],
     ['Canon NPG-59 Toner','Toner & Drum',1350],['Canon NPG-51 Toner','Toner & Drum',1250],['Canon NPG-28 Toner','Toner & Drum',950],['Canon NPG-67 Toner Set','Toner & Drum',4800],['OPC Drum Canon IR Series','Toner & Drum',1450],['Drum Unit IR 2525/2530','Toner & Drum',3200],['Developer Powder Canon','Toner & Drum',700],['PCR Roller Canon','Toner & Drum',450],
     ['Fuser Assembly IR 2525','Fuser Parts',8500],['Upper Roller Canon','Fuser Parts',1450],['Lower Pressure Roller','Fuser Parts',1750],['Fixing Film Sleeve','Fuser Parts',1200],['Thermistor Canon Fuser','Fuser Parts',650],['Heater Lamp Canon','Fuser Parts',900],['Fuser Gear Set','Fuser Parts',550],['Separation Claw Set','Fuser Parts',350],
     ['Pickup Roller Set','Spare Parts',550],['Separation Pad','Spare Parts',350],['ADF Roller Kit','Spare Parts',1450],['Transfer Roller','Spare Parts',850],['Registration Roller','Spare Parts',1100],['Main Drive Gear','Spare Parts',750],['DC Controller PCB','Spare Parts',4500],['Power Supply Board','Spare Parts',3800],['Scanner Cable','Spare Parts',550],['Paper Tray Sensor','Spare Parts',450],
     ['USB Printer Cable','Accessories',250],['LAN Cable 5 Meter','Accessories',180],['Power Cable Copier','Accessories',300],['Stabilizer for Copier','Accessories',2500],['Machine Stand','Accessories',2200],['Dust Cover','Accessories',450],['Service Tool Kit','Accessories',1200],['Cleaning Cloth Pack','Accessories',120]
   ];
-  let products=baseProducts.map((p,i)=>({id:i+1,name:p[0],category:p[1],price:p[2],mrp:p[2],discount:0,qty:i%6+1,details:'',image:productImage(p[0],p[1],i),stock:i%4===0?'Limited':'In Stock'}));
+  let products = baseProducts.map((p,i) => ({id:i+1,name:p[0],category:p[1],price:p[2],mrp:p[2],discount:0,qty:i%6+1,details:'',image:productImage(p[0],p[1]),stock:i%4===0?'Limited':'In Stock'}));
   const models=['IR 2525','IR 3225','IR 2206','IR 2006N','IR 3300','IR ADV 4525','IR ADV 4235'];
   const parts=['Gear','Sensor','Roller','Bushing','Clutch','Spring','Cable','Tray Lock','Developer Seal','Drum Blade'];
   for(let i=products.length+1;i<=120;i++){
     const cat=i%5===0?'Accessories':i%4===0?'Fuser Parts':i%3===0?'Toner & Drum':'Spare Parts';
     const name=cat==='Spare Parts'?`Canon ${models[i%models.length]} ${parts[i%parts.length]}`:cat==='Fuser Parts'?`Canon ${models[i%models.length]} Fuser ${parts[i%parts.length]}`:cat==='Toner & Drum'?`Canon ${models[i%models.length]} Drum/Toner Kit`:`Copier ${parts[i%parts.length]} Accessory`;
     const price=300+(i*73)%9500;
-    products.push({id:i,name,category:cat,price,mrp:price,discount:0,qty:i%8+1,details:'',image:productImage(name,cat,i),stock:i%7===0?'Limited':'In Stock'});
+    products.push({id:i,name,category:cat,price,mrp:price,discount:0,qty:i%8+1,details:'',image:productImage(name,cat),stock:i%7===0?'Limited':'In Stock'});
   }
   return products;
 }
-function login(){ if(document.getElementById('pin').value===ADMIN_PIN){localStorage.setItem('techCndAdmin','yes');showPanel()}else alert('Wrong PIN') }
-function logout(){localStorage.removeItem('techCndAdmin');location.reload()}
-function showPanel(){loginBox.classList.add('hidden');panel.classList.remove('hidden');if(!getProducts().length) seedDemo(true);notes.value=localStorage.getItem('techCndNotes')||'';render();renderOrders()}
-function getProducts(){try{return JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]')}catch(e){return []}}
-function setProducts(p){localStorage.setItem(STORAGE_KEY,JSON.stringify(p));render()}
-function calcPrice(){let price=Number(pprice.value||0), mrp=Number(pmrp.value||0), dis=Number(pdiscount.value||0); if(!price && mrp && dis){pprice.value=Math.round(mrp-(mrp*dis/100));}}
-pdiscount.addEventListener('input',calcPrice); pmrp.addEventListener('input',calcPrice);
-function previewImage(e){
-  const file=e.target.files[0]; if(!file)return;
-  const MAX_SIZE=400; const QUALITY=0.7;
-  const reader=new FileReader();
-  reader.onload=function(ev){
-    const img=new Image();
-    img.onload=function(){
-      const canvas=document.createElement('canvas');
-      let w=img.width, h=img.height;
-      if(w>MAX_SIZE||h>MAX_SIZE){
-        if(w>h){h=Math.round(h*MAX_SIZE/w);w=MAX_SIZE;}
-        else{w=Math.round(w*MAX_SIZE/h);h=MAX_SIZE;}
-      }
-      canvas.width=w; canvas.height=h;
-      const ctx=canvas.getContext('2d');
-      ctx.drawImage(img,0,0,w,h);
-      const compressed=canvas.toDataURL('image/jpeg',QUALITY);
-      pimage.value=compressed;
-      imgPreview.src=compressed;
-      const kb=Math.round(compressed.length*3/4/1024);
-      document.getElementById('imgSizeInfo').textContent='Image size: '+kb+' KB (compressed)';
-    };
-    img.src=ev.target.result;
-  };
-  reader.readAsDataURL(file);
-}
-function saveProduct(){
-  if(!pname.value.trim()){alert('Product name দিন');return}
-  let arr=getProducts();
-  const id=editId.value || 'P'+Date.now();
-  const item={id,name:pname.value.trim(),category:pcat.value,mrp:Number(pmrp.value||pprice.value||0),price:Number(pprice.value||0),discount:Number(pdiscount.value||0),qty:Number(pqty.value||0),stock:pstock.value,details:pdetails.value.trim(),image:pimage.value||PLACEHOLDER};
-  const idx=arr.findIndex(x=>String(x.id)===String(id)); idx>=0?arr[idx]=item:arr.unshift(item); setProducts(arr); resetForm(); alert('Product saved. Public website refresh করলে updated product show হবে।');
-}
-function editProduct(id){const x=getProducts().find(p=>String(p.id)===String(id)); if(!x)return; editId.value=x.id; formTitle.textContent='Edit Product #'+x.id; pname.value=x.name; pcat.value=x.category; pmrp.value=x.mrp||''; pprice.value=x.price||''; pdiscount.value=x.discount||''; pqty.value=x.qty||0; pstock.value=x.stock||'In Stock'; pdetails.value=x.details||''; pimage.value=x.image||''; imgPreview.src=x.image||PLACEHOLDER; scrollTo({top:0,behavior:'smooth'})}
-function resetForm(){editId.value=''; formTitle.textContent='Add Product'; ['pname','pmrp','pprice','pdiscount','pqty','pdetails','pimage'].forEach(id=>document.getElementById(id).value=''); pcat.value='Canon Machines'; pstock.value='In Stock'; pimageFile.value=''; imgPreview.src=PLACEHOLDER}
-function delProduct(id){if(!confirm('Delete this product?'))return; setProducts(getProducts().filter(p=>String(p.id)!==String(id)))}
-function changeStock(id,status){let arr=getProducts(); const x=arr.find(p=>String(p.id)===String(id)); if(x){x.stock=status; if(status==='Out of Stock')x.qty=0; setProducts(arr)}}
-function render(){let arr=getProducts(); const q=(searchAdmin?.value||'').toLowerCase(); const shown=arr.filter(x=>((x.name||'')+(x.category||'')+(x.stock||'')+String(x.id)).toLowerCase().includes(q)); statTotal.textContent=arr.length; statStock.textContent=arr.filter(x=>x.stock==='In Stock').length; statLow.textContent=arr.filter(x=>x.stock==='Low Stock'||x.stock==='Limited').length; statOut.textContent=arr.filter(x=>x.stock==='Out of Stock').length; list.innerHTML=shown.length?shown.map(x=>`<div class='border rounded-2xl p-3 flex gap-3 bg-white'><img src='${x.image||PLACEHOLDER}' onerror="this.src='${PLACEHOLDER}'" class='w-24 h-24 object-contain bg-gray-50 rounded-xl border p-1'><div class='flex-1'><div class='flex justify-between gap-2'><b>#${x.id} ${x.name}</b><span class='text-[10px] px-2 py-1 rounded h-fit ${x.stock==='Out of Stock'?'bg-red-100 text-red-700':'bg-green-100 text-green-700'}'>${x.stock}</span></div><p class='text-xs text-gray-500'>${x.category} • Qty: ${x.qty||0}</p><p class='font-black text-red-600'>₹${Number(x.price||0).toLocaleString('en-IN')} ${x.discount?`<span class='text-xs text-green-600'>${x.discount}% OFF</span>`:''}</p><p class='text-xs text-gray-500 line-clamp-1'>${x.details||''}</p><div class='flex flex-wrap gap-2 mt-2'><button onclick="editProduct('${x.id}')" class='bg-slate-900 text-white text-xs px-3 py-1 rounded'>Edit + Image</button><button onclick="delProduct('${x.id}')" class='bg-red-600 text-white text-xs px-3 py-1 rounded'>Delete</button><button onclick="changeStock('${x.id}','In Stock')" class='border text-xs px-2 py-1 rounded'>In</button><button onclick="changeStock('${x.id}','Low Stock')" class='border text-xs px-2 py-1 rounded'>Low</button><button onclick="changeStock('${x.id}','Out of Stock')" class='border text-xs px-2 py-1 rounded'>Out</button></div></div></div>`).join(''):'<p class="text-gray-500">No products added yet. Load 120 Products চাপুন।</p>'}
-function clearProducts(){if(confirm('Clear all admin products?'))setProducts([])}
-
-function getOrders(){try{return JSON.parse(localStorage.getItem(ORDER_KEY)||'[]')}catch(e){return []}}
-function setOrders(o){localStorage.setItem(ORDER_KEY,JSON.stringify(o));renderOrders()}
-function saveOrder(){
-  const id=(orderId.value||'').trim().toUpperCase();
-  if(!id){alert('Order ID দিন');return}
-  const item={id,customer:orderCustomer.value.trim(),phone:orderPhone.value.trim(),status:orderStatus.value,paymentStatus:paymentStatus.value,amount:Number(orderAmount.value||0),tracking:trackingLink.value.trim(),deliveryName:deliveryName.value.trim(),deliveryPhone:deliveryPhone.value.trim(),note:orderNote.value.trim(),updated:new Date().toLocaleString('en-IN')};
-  let arr=getOrders(); const i=arr.findIndex(x=>String(x.id).toUpperCase()===id); i>=0?arr[i]=item:arr.unshift(item); setOrders(arr); resetOrderForm(); alert('Order tracking saved. Customer Track Order থেকে দেখতে পারবে।');
-}
-function editOrder(id){const x=getOrders().find(o=>String(o.id)===String(id)); if(!x)return; orderId.value=x.id; orderCustomer.value=x.customer||''; orderPhone.value=x.phone||''; orderStatus.value=x.status||'Order Received'; paymentStatus.value=x.paymentStatus||'Payment Pending'; orderAmount.value=x.amount||''; trackingLink.value=x.tracking||''; deliveryName.value=x.deliveryName||''; deliveryPhone.value=x.deliveryPhone||''; orderNote.value=x.note||''; orderId.focus()}
-function deleteOrder(id){if(confirm('Delete this order?')) setOrders(getOrders().filter(o=>String(o.id)!==String(id)))}
-function resetOrderForm(){['orderId','orderCustomer','orderPhone','orderAmount','trackingLink','deliveryName','deliveryPhone','orderNote'].forEach(id=>document.getElementById(id).value=''); orderStatus.value='Order Received'; paymentStatus.value='Payment Pending'}
-function statusClass(s){return s==='Delivered'?'bg-green-100 text-green-700':s==='Shipped'||s==='Out for Delivery'?'bg-blue-100 text-blue-700':s==='Cancelled'?'bg-red-100 text-red-700':'bg-yellow-100 text-yellow-700'}
-function renderOrders(){
-  const q=(document.getElementById('searchOrder')?.value||'').toLowerCase();
-  const arr=getOrders().filter(o=>(o.id+o.customer+o.phone+o.status+(o.paymentStatus||'')+o.deliveryPhone).toLowerCase().includes(q));
-  const box=document.getElementById('ordersList'); if(!box)return;
-  box.innerHTML=arr.length?arr.map(o=>`<div class='border rounded-2xl p-4 bg-white'><div class='flex justify-between gap-2'><b>${o.id}</b><span class='text-[10px] px-2 py-1 rounded h-fit ${statusClass(o.status)}'>${o.status}</span></div><p class='text-xs text-gray-500 mt-1'>Customer: ${o.customer||'-'} • ${o.phone||'-'}</p><p class='text-xs mt-1'><b>Payment:</b> <span class='font-bold ${o.paymentStatus==='Paid'?'text-green-700':'text-red-600'}'>${o.paymentStatus||'Payment Pending'}</span> ${o.amount?`• ₹${Number(o.amount).toLocaleString('en-IN')}`:''}</p><p class='text-xs mt-1'><b>Delivery:</b> ${o.deliveryName||'-'} ${o.deliveryPhone?`• ${o.deliveryPhone}`:''}</p>${o.tracking?`<p class='text-xs mt-1'><b>Tracking:</b> ${o.tracking}</p>`:''}${o.note?`<p class='text-xs text-gray-600 mt-1'>${o.note}</p>`:''}<p class='text-[10px] text-gray-400 mt-1'>Updated: ${o.updated||''}</p><div class='flex gap-2 mt-3'><button onclick="editOrder('${o.id}')" class='bg-slate-900 text-white text-xs px-3 py-1 rounded'>Edit</button><button onclick="deleteOrder('${o.id}')" class='bg-red-600 text-white text-xs px-3 py-1 rounded'>Delete</button></div></div>`).join(''):'<p class="text-gray-500">No orders yet. Customer order করলে auto save হবে, অথবা manual Order ID add করুন।</p>';
+async function seedDemo(silent=false) {
+  if(getProducts().length && !silent && !confirm('বর্তমান products replace করে 120 load করবেন?')) return;
+  const arr = defaultProducts(); setProducts(arr);
+  renderList(); renderFormMiniList(); updateStats();
+  if(!silent) toast('120 products loaded!');
+  try { for(const p of arr) await apiPost({action:'saveProduct', product:p}); } catch(e){}
 }
 
-function saveNotes(){localStorage.setItem('techCndNotes',notes.value);alert('Saved')}
-function exportProducts(){const blob=new Blob([JSON.stringify(getProducts(),null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='tech-cnd-products.json'; a.click()}
-function seedDemo(silent=false){if(getProducts().length && !silent && !confirm('বর্তমান list replace করে আবার 120 products load করবেন?'))return; setProducts(defaultProducts()); if(!silent) alert('120 products loaded. এখন যেকোনো product Edit + Image থেকে image upload/edit করুন।')}
-if(localStorage.getItem('techCndAdmin')==='yes')showPanel();
-</script>
+// ===== API =====
+async function apiGet(action){const c=new AbortController();const t=setTimeout(()=>c.abort(),8000);try{const r=await fetch(API_URL+'?action='+action+'&t='+Date.now(),{signal:c.signal,cache:'no-store'});if(!r.ok)throw new Error('API error');return await r.json();}finally{clearTimeout(t);}}
+async function apiPost(data){const c=new AbortController();const t=setTimeout(()=>c.abort(),10000);try{const r=await fetch(API_URL,{method:'POST',body:JSON.stringify(data),signal:c.signal,cache:'no-store'});if(!r.ok)throw new Error('API error');return await r.json();}finally{clearTimeout(t);}}
+async function loadProductsFromSheet(){try{const data=await apiGet('products');const arr=(Array.isArray(data)?data:[]).filter(x=>x&&x.id);if(arr.length){setProducts(arr);renderList();renderFormMiniList();}}catch(e){console.warn('Sheet load failed',e);}}
+async function loadOrdersFromSheet(){try{const data=await apiGet('orders');const arr=(Array.isArray(data)?data:[]).filter(x=>x&&(x.orderId||x.id)).map(o=>({id:o.id||o.orderId||'',customer:o.customer||o.customerName||'',phone:o.phone||o.mobile||'',status:o.status||o.orderStatus||'Order Received',paymentStatus:o.paymentStatus||'Payment Pending',amount:Number(o.amount||0),tracking:o.tracking||o.trackingLink||'',deliveryName:o.deliveryName||o.deliveryBoyName||'',deliveryPhone:o.deliveryPhone||o.deliveryBoyMobile||'',note:o.note||'',updated:o.updated||o.date||''}));if(arr.length){setOrders(arr);renderDashOrders();renderOrderMiniList();}}catch(e){console.warn('Order sheet load failed',e);}}
 
-<script>
-// ===== Google Sheet Backend Connected Version =====
-const API_URL = "https://script.google.com/macros/s/AKfycbxSdAqsOtxQdHlcb_zyO91HWdb8fl2HQ3Go7NXCh_0R0wCGoofGGYuz20FtACzfDtVW/exec";
-let sheetProducts = [];
-let sheetOrders = [];
-function normalizeProduct(p,i=0){return {id:p.id||('P'+Date.now()+i),name:p.name||'',category:p.category||'Spare Parts',mrp:Number(p.mrp||p.price||0),price:Number(p.price||0),discount:Number(p.discount||0),qty:Number(p.qty||p.stockQty||0),stock:p.stock||p.stockStatus||'In Stock',details:p.details||'',image:p.image||PLACEHOLDER}}
-function normalizeOrder(o){return {id:o.id||o.orderId||'',customer:o.customer||o.customerName||'',phone:o.phone||o.mobile||'',status:o.status||o.orderStatus||'Order Received',paymentStatus:o.paymentStatus||'Payment Pending',amount:Number(o.amount||0),tracking:o.tracking||o.trackingLink||'',deliveryName:o.deliveryName||o.deliveryBoyName||'',deliveryPhone:o.deliveryPhone||o.deliveryBoyMobile||'',note:o.note||'',updated:o.updated||o.date||''}}
-async function apiGet(action){const c=new AbortController(); const t=setTimeout(()=>c.abort(),8000); try{const r=await fetch(API_URL+'?action='+action+'&t='+Date.now(),{signal:c.signal,cache:'no-store'}); if(!r.ok) throw new Error('API error'); return await r.json();} finally{clearTimeout(t);} }
-async function apiPost(data){const c=new AbortController(); const t=setTimeout(()=>c.abort(),10000); try{const r=await fetch(API_URL,{method:'POST',body:JSON.stringify(data),signal:c.signal,cache:'no-store'}); if(!r.ok) throw new Error('API error'); return await r.json();} finally{clearTimeout(t);} }
-async function loadProductsFromSheet(){try{const data=await apiGet('products'); sheetProducts=(Array.isArray(data)?data:[]).filter(x=>x&&x.id).map(normalizeProduct); if(!sheetProducts.length){sheetProducts=defaultProducts(); for(const p of sheetProducts) await apiPost({action:'saveProduct',product:toSheetProduct(p)});} localStorage.setItem(STORAGE_KEY,JSON.stringify(sheetProducts)); render();}catch(e){console.warn(e); sheetProducts=JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]'); render(); alert('Google Sheet load হয়নি। Deploy setting Anyone আছে কিনা দেখুন। Local data দেখানো হচ্ছে।')}}
-async function loadOrdersFromSheet(){try{const data=await apiGet('orders'); sheetOrders=(Array.isArray(data)?data:[]).filter(x=>x&&(x.orderId||x.id)).map(normalizeOrder); localStorage.setItem(ORDER_KEY,JSON.stringify(sheetOrders)); renderOrders();}catch(e){console.warn(e); sheetOrders=JSON.parse(localStorage.getItem(ORDER_KEY)||'[]'); renderOrders();}}
-function toSheetProduct(p){return {id:p.id,name:p.name,category:p.category,mrp:p.mrp,price:p.price,discount:p.discount,stockQty:p.qty,stockStatus:p.stock,image:p.image,details:p.details}}
-function toSheetOrder(o){return {orderId:o.id,customerName:o.customer,mobile:o.phone,address:o.address||'',productName:o.productName||'',amount:o.amount,paymentStatus:o.paymentStatus,orderStatus:o.status,trackingLink:o.tracking,deliveryBoyName:o.deliveryName,deliveryBoyMobile:o.deliveryPhone}}
-function getProducts(){return sheetProducts.length?sheetProducts:JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]')}
-function getOrders(){return sheetOrders.length?sheetOrders:JSON.parse(localStorage.getItem(ORDER_KEY)||'[]')}
-function setProducts(p){sheetProducts=p; localStorage.setItem(STORAGE_KEY,JSON.stringify(p)); render()}
-function setOrders(o){sheetOrders=o; localStorage.setItem(ORDER_KEY,JSON.stringify(o)); renderOrders()}
-function login(){ if(document.getElementById('pin').value===ADMIN_PIN){localStorage.setItem('techCndAdmin','yes');showPanel()}else alert('Wrong PIN') }
-function showPanel(){loginBox.classList.add('hidden');panel.classList.remove('hidden');notes.value=localStorage.getItem('techCndNotes')||''; render(); renderOrders(); loadProductsFromSheet(); loadOrdersFromSheet();}
-async function saveProduct(){
-  if(!pname.value.trim()){alert('Product name দিন');return}
-  const id=editId.value || 'P'+Date.now();
-  const item={id,name:pname.value.trim(),category:pcat.value,mrp:Number(pmrp.value||pprice.value||0),price:Number(pprice.value||0),discount:Number(pdiscount.value||0),qty:Number(pqty.value||0),stock:pstock.value,details:pdetails.value.trim(),image:pimage.value||PLACEHOLDER};
-  let arr=getProducts(); const idx=arr.findIndex(x=>String(x.id)===String(id)); idx>=0?arr[idx]=item:arr.unshift(item); setProducts(arr);
-  try{const res=await apiPost({action:'saveProduct',product:toSheetProduct(item)}); if(!res.ok) throw new Error('save failed'); alert('Product Google Sheet এ saved হয়েছে।'); resetForm(); await loadProductsFromSheet();}catch(e){console.warn(e); alert('Sheet save problem। Local save হয়েছে। Apps Script deploy check করুন।'); resetForm();}
-}
-async function delProduct(id){if(!confirm('Delete this product?'))return; setProducts(getProducts().filter(p=>String(p.id)!==String(id))); try{await apiPost({action:'deleteProduct',id}); await loadProductsFromSheet();}catch(e){}}
-async function changeStock(id,status){let arr=getProducts(); const x=arr.find(p=>String(p.id)===String(id)); if(x){x.stock=status; if(status==='Out of Stock')x.qty=0; setProducts(arr); try{await apiPost({action:'saveProduct',product:toSheetProduct(x)});}catch(e){console.warn(e)}}}
-async function seedDemo(silent=false){if(getProducts().length && !silent && !confirm('বর্তমান Sheet product replace/append করে 120 products load করবেন?'))return; const arr=defaultProducts(); setProducts(arr); try{for(const p of arr) await apiPost({action:'saveProduct',product:toSheetProduct(p)}); if(!silent) alert('120 products Google Sheet এ loaded হয়েছে।')}catch(e){if(!silent) alert('Sheet save problem। Local loaded হয়েছে।')}}
-async function saveOrder(){
-  const id=(orderId.value||'').trim().toUpperCase(); if(!id){alert('Order ID দিন');return}
-  const item={id,customer:orderCustomer.value.trim(),phone:orderPhone.value.trim(),status:orderStatus.value,paymentStatus:paymentStatus.value,amount:Number(orderAmount.value||0),tracking:trackingLink.value.trim(),deliveryName:deliveryName.value.trim(),deliveryPhone:deliveryPhone.value.trim(),note:orderNote.value.trim(),updated:new Date().toLocaleString('en-IN')};
-  let arr=getOrders(); const i=arr.findIndex(x=>String(x.id).toUpperCase()===id); i>=0?arr[i]=item:arr.unshift(item); setOrders(arr);
-  try{const res=await apiPost({action:'updateOrder',order:toSheetOrder(item)}); if(!res.ok) throw new Error('not found'); alert('Order Google Sheet এ updated হয়েছে।'); resetOrderForm(); await loadOrdersFromSheet();}catch(e){console.warn(e); alert('Order update হয়নি। Order ID Sheet-এ আছে কিনা দেখুন। Local save হয়েছে।'); resetOrderForm();}
-}
-async function deleteOrder(id){if(confirm('Delete not supported in Sheet code. Cancelled status করবেন?')){const o=getOrders().find(x=>String(x.id)===String(id)); if(o){o.status='Cancelled'; await apiPost({action:'updateOrder',order:toSheetOrder(o)}); await loadOrdersFromSheet();}}}
-function exportProducts(){const blob=new Blob([JSON.stringify(getProducts(),null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='tech-cnd-products.json'; a.click()}
-if(localStorage.getItem('techCndAdmin')==='yes'){setTimeout(showPanel,200)};
-</script>
+// ===== PWA =====
+if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator.serviceWorker.register("sw.js").catch(()=>{}); }); }
 
-<script>
-  if ("serviceWorker" in navigator) {
-    window.addEventListener("load", function () {
-      navigator.serviceWorker.register("sw.js").catch(function (error) {
-        console.log("Service Worker registration failed:", error);
-      });
-    });
-  }
-
-  let deferredInstallPrompt;
-  window.addEventListener("beforeinstallprompt", function (event) {
-    event.preventDefault();
-    deferredInstallPrompt = event;
-    const btn = document.getElementById("installAppBtn");
-    if (btn) btn.classList.remove("hidden");
-  });
-
-  async function installTechCndApp() {
-    if (!deferredInstallPrompt) {
-      alert("Install option browser menu থেকে Add to Home Screen / Install App চাপুন।");
-      return;
-    }
-    deferredInstallPrompt.prompt();
-    await deferredInstallPrompt.userChoice;
-    deferredInstallPrompt = null;
-    const btn = document.getElementById("installAppBtn");
-    if (btn) btn.classList.add("hidden");
-  }
+// ===== INIT =====
+if (localStorage.getItem('techCndAdmin') === 'yes') { setTimeout(showPanel, 100); }
 </script>
 </body>
 </html>
